@@ -22,7 +22,7 @@ pangolin/
 # # Don't ignore a specific directory and its contents
 !/orbslam3_docker/orbslam_modifiedFork/Datasets/carlaDatasets/justForPlotingZIPResults/**/*.png
 !ros_docker/**/*.*
-
+!carla/scripts/*.png
 # # But ignore .zip files in the specific directory
 # /orbslam3_docker/orbslam_modifiedFork/Datasets/carlaDatasets/justForPlotingZIPResults/**/*.zip
 
