@@ -1,0 +1,9 @@
+Subfolder's content
+1: original test with shifted timestamp at the beginning
+2: original test with shifted timestamp at the beginning
+3: original test with shifted timestamp at the beginning
+4: test after fixing timestamp shift in dataset and groundtruth 
+   also 1200 orb features
+5: 1500 ORB Features
+6: 900 ORB Features
+7: baseline 25 instead of 35

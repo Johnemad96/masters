@@ -1,0 +1,28 @@
+# Ignore everything
+*.*
+
+# ignore this subrepo for now
+EnvSetup/
+**/ORB_SLAM3
+pangolin/
+# ignore any .bag extension due to there file size
+# *.bag
+# *.mp4
+# *.png
+
+# But don't ignore .md, .sh, .py, .txt files and Dockerfile
+!.gitignore
+!**.md
+!**.sh
+!**.py
+!**.txt
+!*/Dockerfile
+!**.csv
+
+
+# # Don't ignore a specific directory and its contents
+# !/orbslam3_docker/orbslam_modifiedFork/Datasets/carlaDatasets/justForPlotingZIPResults/**/*
+
+# # But ignore .zip files in the specific directory
+# /orbslam3_docker/orbslam_modifiedFork/Datasets/carlaDatasets/justForPlotingZIPResults/**/*.zip
+

@@ -1,0 +1,4 @@
+sun: day
+rain: 100
+puddles: 50
+wetness: 50

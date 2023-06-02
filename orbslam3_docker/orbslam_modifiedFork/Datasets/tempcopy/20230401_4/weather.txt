@@ -1,0 +1,2 @@
+sun: night
+fog: 30

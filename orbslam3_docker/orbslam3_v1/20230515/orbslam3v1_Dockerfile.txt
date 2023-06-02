@@ -1,0 +1,98 @@
+# I need a docker file that installs the following:
+# 1. ORB-SLAM3 with all its dependencies inside the docker container
+
+
+# 1. Install dependencies
+
+# 1.1 Install dependencies for ORB-SLAM3
+RUN apt-get update && apt-get install -y \
+    cmake \
+    g++ \
+    git \
+    libeigen3-dev \
+    libglew-dev \
+    libopencv-dev \
+    libpng-dev \
+    libpython2.7-dev \
+    libpython3-dev \
+    libtbb-dev \
+    libv4l-dev \
+    libyaml-cpp-dev \
+    pkg-config \
+    python3-numpy \
+    python3-yaml \
+    wget
+
+# 1.2 Install dependencies for Pangolin
+RUN apt-get update && apt-get install -y \
+    libgl1-mesa-dev \
+    libglew-dev \
+    libpython2.7-dev \
+    libpython3-dev \
+    libtbb-dev \
+    libv4l-dev \
+    libyaml-cpp-dev \
+    pkg-config \
+    python3-numpy \
+    python3-yaml \
+    wget
+
+# 1.3 Install dependencies for DBoW2 and g2o
+RUN apt-get update && apt-get install -y \
+    libboost-all-dev \
+    libcairo2-dev \
+    libgoogle-glog-dev \
+    liblua5.2-dev \
+    libsuitesparse-dev \
+    libtbb-dev \
+    qtbase5-dev \
+    qtdeclarative5-dev \
+    qtquickcontrols2-5-dev \
+    qtmultimedia5-dev \
+    qml-module-qtquick2 \
+    qml-module-qtquick-controls \
+    qml-module-qtquick-controls2 \
+    qml-module-qtquick-dialogs \
+    qml-module-qtquick-layouts \
+    qml-module-qtqml-models2 \
+    qml-module-qtquick-window2 \
+    qml-module-qtquick-shapes \
+    qml-module-qtquick-test \
+    qml-module-qtquick-xmllistmodel \
+    qml-module-qt-labs-folderlistmodel \
+    qml-module-qt-la
+
+# 2. Install ORB-SLAM3
+
+# 2.1 Clone ORB-SLAM3
+RUN git clone
+RUN cd ORB-SLAM3 && chmod +x build.sh && ./build.sh
+
+# 2.2 Build ORB-SLAM3
+RUN cd ORB-SLAM3 && chmod +x build.sh && ./build.sh
+
+# 2.3 Download ORB-SLAM3 vocabulary
+
+# 2.4 Download ORB-SLAM3 test sequences
+
+# 2.5 Run ORB-SLAM3 test sequences
+
+
+
+# 3. Install Pangolin
+
+# 3.1 Clone Pangolin
+
+# 3.2 Build Pangolin
+
+# 3.3 Run Pangolin test sequences
+
+
+
+
+
+
+
+
+
+
