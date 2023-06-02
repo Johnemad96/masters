@@ -2,7 +2,6 @@
 *.*
 
 # ignore this subrepo for now
-EnvSetup/
 **/ORB_SLAM3
 pangolin/
 # ignore any .bag extension due to there file size
@@ -21,7 +20,7 @@ pangolin/
 
 
 # # Don't ignore a specific directory and its contents
-# !/orbslam3_docker/orbslam_modifiedFork/Datasets/carlaDatasets/justForPlotingZIPResults/**/*
+!/orbslam3_docker/orbslam_modifiedFork/Datasets/carlaDatasets/justForPlotingZIPResults/**/*.png
 
 # # But ignore .zip files in the specific directory
 # /orbslam3_docker/orbslam_modifiedFork/Datasets/carlaDatasets/justForPlotingZIPResults/**/*.zip
