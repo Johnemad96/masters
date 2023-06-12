@@ -50,17 +50,17 @@ def write_to_csv(col_name, row_idx, value):
         col_data = data[col_name]
     else:
         # create new column
-        col_data = [None] * num_rows
+        col_data = {}#[None] * num_rows
         data[col_name] = col_data
         num_cols += 1
 
     # update value at the specified row index
     col_data[row_idx] = value
-    print(col_data)
+    # print(col_data)
     # write to CSV file
     df = pd.DataFrame(data)
-    print(df)
-    df.to_csv(os.path.join(ROOT_DIR, (RESULT_CSV_PREFIX+RESULT_CSV) if RESULT_CSV_PREFIX!=None else(RESULT_CSV)),index = False)
+    # print(df)
+    df.to_csv(os.path.join(ROOT_DIR, (RESULT_CSV_PREFIX+RESULT_CSV) if RESULT_CSV_PREFIX!=None else(RESULT_CSV)))
 
 def FilterOutputToExtractRMSEData(output,path):
     # function to extract RMSE data from the command output
@@ -123,10 +123,10 @@ def ParseResults_SubSubfolder(subfolder,subfolder_list, subfolder_path,dataset_g
     # PLOT_FILE_NAME = STEREO_FOLDER_NAME + subfolder + SAVE_PLOT_FILE
     # TERMINAL_COMMAND = TERMINAL_COMMAND + SAVE_PLOT_CMD + os.path.join(subfolder_path,PLOT_FOLDER_NAME,PLOT_FILE_NAME)
 
-    print(TERMINAL_COMMAND)
+    # print(TERMINAL_COMMAND)
     # print(RESULTS_FILE_NAME)
     # print("\t\t", TERMINAL_COMMAND)
-    print(os.getcwd())
+    # print(os.getcwd())
     result = RunTerminalCommand(subfolder_path, TERMINAL_COMMAND)
     print("zew")
     rmse_data = FilterOutputToExtractRMSEData(result.stdout,subfolder_path)

@@ -39,12 +39,16 @@ if __name__ == "__main__":
     print("Relative path:", relative_path)
     # print(os.listdir(os.path.join(parameters['ROOT_DIR'],relative_path)))
     subfolder = '30_0'
-    subfolder_path = os.path.join(parameters['ROOT_DIR'],relative_path,subfolder)
-    subfolder_list = os.listdir(subfolder_path)
     dataset_ground_truth_folder = parameters['ROOT_DIR'].split(os.sep)[1]
-    print(subfolder,subfolder_list, subfolder_path,dataset_ground_truth_folder)
-    print("***** SUBFOLDER PATH", subfolder_path)
-    ParseResults_SubSubfolder(subfolder,subfolder_list, subfolder_path)
+    testParameterFolder_Path = os.path.join(parameters['ROOT_DIR'],relative_path)
+    testParameterFolder_list = [f for f in os.listdir(testParameterFolder_Path) if os.path.isdir(os.path.join(testParameterFolder_Path, f))]
+    # print(subfolder,subfolder_list, subfolder_path,dataset_ground_truth_folder)
+    # print("***** SUBFOLDER PATH", subfolder_path)
+    for subfolder in testParameterFolder_list:
+
+        subfolder_path = os.path.join(parameters['ROOT_DIR'],relative_path,subfolder)
+        subfolder_list = os.listdir(subfolder_path)
+        ParseResults_SubSubfolder(subfolder,subfolder_list, subfolder_path)
     # subfolder:                    subfolder name under stereo(/1/, /2/, /3/)
     # subfolder_path:               path from ROOT till the subfolder (under stereo: /1/, /2/, /3/)
     # subfolder_list:               list of files (and possibly folders) under the subfolder path which is the trajectory txt files

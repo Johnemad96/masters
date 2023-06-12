@@ -1,0 +1,4 @@
+root_dir: /Datasets/carlaDatasets
+test_results_path: /Datasets/carlaDatasets/testParametersEffect/stereo
+test_parameter: baseline
+results_evaluation_path:  /Datasets/carlaDatasets/justForPlotingZIPResults
