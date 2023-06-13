@@ -128,9 +128,9 @@ def ParseResults_SubSubfolder(subfolder,subfolder_list, subfolder_path,dataset_g
     # print("\t\t", TERMINAL_COMMAND)
     # print(os.getcwd())
     result = RunTerminalCommand(subfolder_path, TERMINAL_COMMAND)
-    print("zew")
+    # print("zew")
     rmse_data = FilterOutputToExtractRMSEData(result.stdout,subfolder_path)
-    print(rmse_data)
+    print("RMSE:",rmse_data)
     if rmse_data != -1:
 
         # FIX ME

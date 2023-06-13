@@ -74,29 +74,39 @@ if __name__ == "__main__":
     # Change_Yaml_Parameters(new_ThDepth = 35, new_ORBextractor_nFeatures = 1200)
     # Init Value for OrbSlam Parameters, and the incrementation value
     # baseline
-    new_ThDepth = 20.0
-    increment_new_ThDepth = 5
-    MAX_new_ThDepth = 90.0
+    # default_ThDepth = 35.0
+    new_ThDepth = 95.0
+    # increment_new_ThDepth = 5
+    # MAX_new_ThDepth = 130.0
 
     # orb features
-    # new_ORBextractor_nFeatures = 500
-    # increment_new_ORBextractor_nFeatures = 100
-    # MAX_new_ORBextractor_nFeatures = 2000
+    new_ORBextractor_nFeatures = 600
+    increment_new_ORBextractor_nFeatures = 100
+    MAX_new_ORBextractor_nFeatures = 2000
 
     #create test parameter sub directory 
     os.makedirs(os.path.join(test_results_path, test_parameter), exist_ok=True)
     pathToSaveTestResults_testParameter = create_incremented_folder(os.path.join(test_results_path, test_parameter))
     print(pathToSaveTestResults_testParameter)
-    while int(new_ThDepth) <= int(MAX_new_ThDepth):
+    # while int(new_ThDepth) <= int(MAX_new_ThDepth):
+    # while int(new_ORBextractor_nFeatures) <= int(MAX_new_ORBextractor_nFeatures):
         
-        # pathToSaveTestResults = "/Datasets/carlaDatasets/"
-        Change_Yaml_Parameters(new_ThDepth)
-        pathToSaveTestResults = os.path.join(pathToSaveTestResults_testParameter,str(new_ThDepth).replace('.', '_'))
-        os.makedirs(pathToSaveTestResults, exist_ok=True)
-        Run_ORBSlam_and_Dataset(filtered_files[0], pathToSaveTestResults)
-        # new_ThDepth += increment_new_ThDepth
+    #     # pathToSaveTestResults = "/Datasets/carlaDatasets/"
 
-        # Change_Yaml_Parameters(new_ORBextractor_nFeatures)
+    #     # Change_Yaml_Parameters(new_ThDepth)
+    #     # pathToSaveTestResults = os.path.join(pathToSaveTestResults_testParameter,(str(new_ThDepth).zfill(4)).replace('.', '_'))
+    #     # os.makedirs(pathToSaveTestResults, exist_ok=True)
+    #     # Run_ORBSlam_and_Dataset(filtered_files[0], pathToSaveTestResults)
+    #     # new_ThDepth += increment_new_ThDepth
 
-        # Run_ORBSlam_and_Dataset("38_PaperDataset_Town10_20230331_2_normal_night_euroc.bag", pathToSaveTestResults)
-        # new_ORBextractor_nFeatures += increment_new_ThDepth
+    #     Change_Yaml_Parameters(new_ThDepth=default_ThDepth, new_ORBextractor_nFeatures = new_ORBextractor_nFeatures)
+    #     pathToSaveTestResults = os.path.join(pathToSaveTestResults_testParameter,(str(new_ORBextractor_nFeatures).zfill(4)).replace('.', '_'))
+    #     os.makedirs(pathToSaveTestResults, exist_ok=True)
+    #     Run_ORBSlam_and_Dataset(filtered_files[0], pathToSaveTestResults)
+    #     new_ORBextractor_nFeatures += increment_new_ORBextractor_nFeatures
+    
+    # Custome test 
+    Change_Yaml_Parameters(new_ThDepth=new_ThDepth, new_ORBextractor_nFeatures = new_ORBextractor_nFeatures)
+    pathToSaveTestResults = os.path.join(pathToSaveTestResults_testParameter,((str(new_ThDepth).zfill(4)) + (str(new_ORBextractor_nFeatures).zfill(4))).replace('.', '_'))
+    os.makedirs(pathToSaveTestResults, exist_ok=True)
+    Run_ORBSlam_and_Dataset(filtered_files[0], pathToSaveTestResults)
