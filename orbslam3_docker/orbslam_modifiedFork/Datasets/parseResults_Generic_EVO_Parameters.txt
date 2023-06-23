@@ -1,4 +1,5 @@
 # parameters for evo tools for parseResults_Generic.py
 ROOT_DIR: /home/john/masters/orbslam3_docker/orbslam_modifiedFork/Datasets/carlaDatasets/testParametersEffect
 STEREO_FOLDER_NAME: stereo
+test_parameter: baseline_ORBextractor_nFeatures
 GROUND_TRUTH_FILE_NAME: GroundTruth_Transformed_clean.tum

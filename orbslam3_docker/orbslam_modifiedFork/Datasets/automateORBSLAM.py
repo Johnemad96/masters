@@ -106,7 +106,15 @@ if __name__ == "__main__":
     #     new_ORBextractor_nFeatures += increment_new_ORBextractor_nFeatures
     
     # Custome test 
-    Change_Yaml_Parameters(new_ThDepth=new_ThDepth, new_ORBextractor_nFeatures = new_ORBextractor_nFeatures)
-    pathToSaveTestResults = os.path.join(pathToSaveTestResults_testParameter,((str(new_ThDepth).zfill(4)) + (str(new_ORBextractor_nFeatures).zfill(4))).replace('.', '_'))
-    os.makedirs(pathToSaveTestResults, exist_ok=True)
-    Run_ORBSlam_and_Dataset(filtered_files[0], pathToSaveTestResults)
+    # nORBFeatures_test = [600, 800, 1000, 2000]
+    # baseline_test = [70,80,90,100]
+    
+    for nORBFeatures_test in [600,800,1000,2000]:
+        new_ORBextractor_nFeatures = nORBFeatures_test
+        for baseline_test in [70,80,90,100]:
+            new_ThDepth = baseline_test*1.0
+            Change_Yaml_Parameters(new_ThDepth=new_ThDepth, new_ORBextractor_nFeatures = new_ORBextractor_nFeatures)
+            pathToSaveTestResults = os.path.join(pathToSaveTestResults_testParameter,((str(new_ThDepth).zfill(4)) + (str(new_ORBextractor_nFeatures).zfill(4))).replace('.', '_'))
+            os.makedirs(pathToSaveTestResults, exist_ok=True)
+            Run_ORBSlam_and_Dataset(filtered_files[0], pathToSaveTestResults)
+            time.sleep(3)

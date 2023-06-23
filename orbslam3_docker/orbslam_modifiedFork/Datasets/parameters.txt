@@ -1,4 +1,5 @@
+# parameters for automateORBSLAM.py
 root_dir: /Datasets/carlaDatasets
 test_results_path: /Datasets/carlaDatasets/testParametersEffect/stereo
-test_parameter: baseline
+test_parameter: baseline_ORBextractor_nFeatures
 results_evaluation_path:  /Datasets/carlaDatasets/justForPlotingZIPResults
