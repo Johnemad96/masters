@@ -34,6 +34,7 @@ def list_bag_files(directory , filter_bag_files_strings = None):
     return bag_files, filtered_files
 
 ## MISSING:
+## SOLVED!!!
 #  how to save the output of this in a specific output directory
 def Run_ORBSlam_and_Dataset(rosbagName, testResultDirectory=None):
     # Start a command

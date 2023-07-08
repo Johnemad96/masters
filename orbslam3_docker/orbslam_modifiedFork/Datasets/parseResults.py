@@ -62,7 +62,7 @@ def write_to_csv(col_name, row_idx, value):
     # print(df)
     df.to_csv(os.path.join(ROOT_DIR, (RESULT_CSV_PREFIX+RESULT_CSV) if RESULT_CSV_PREFIX!=None else(RESULT_CSV)))
 
-def FilterOutputToExtractRMSEData(output,path):
+def FilterOutputToExtractRMSEData(output,path=None):
     # function to extract RMSE data from the command output
     match = re.search(r'rmse\s+(\d+\.\d+)\D', output, re.IGNORECASE)
     if match:
@@ -79,13 +79,17 @@ def RunTerminalCommand(DIR,CMD):
     # print(DIR,result)
     return result
 
-def ParseResults_SubSubfolder(subfolder,subfolder_list, subfolder_path,dataset_ground_truth_folder = None):
+def ParseResults_SubSubfolder(subfolder,subfolder_list, subfolder_path,dataset_ground_truth_folder = None, Ground_Truth_File_Name=None,Stereo_Folder_Name=None,external_server_evaluation=None):
     # subfolder:                    subfolder name under stereo(/1/, /2/, /3/)
     # subfolder_path:               path from ROOT till the subfolder (under stereo: /1/, /2/, /3/)
     # subfolder_list:               list of files (and possibly folders) under the subfolder path which is the trajectory txt files
     # dataset_ground_truth_folder:  renamed from timestamped_folder, the folder inside "carlaDatasets/" which contains the groundtruth file,
     #                               stereo/stereo_inertial folder
-    global PLOT_FOLDER_NAME,BASE_TERMINAL_COMMAND,RESULT_CSV_PREFIX
+    global PLOT_FOLDER_NAME,BASE_TERMINAL_COMMAND,RESULT_CSV_PREFIX,GROUND_TRUTH_FILE_NAME
+    if Ground_Truth_File_Name != None:
+        GROUND_TRUTH_FILE_NAME = Ground_Truth_File_Name
+    if Stereo_Folder_Name != None:
+        STEREO_FOLDER_NAME = Stereo_Folder_Name
     RESULT_CSV_PREFIX = os.sep.join(subfolder_path.split(os.sep)[8:-1]).replace('/','_') + "_"
     if dataset_ground_truth_folder !=None:
         TERMINAL_COMMAND = BASE_TERMINAL_COMMAND + os.path.join(ROOT_DIR, dataset_ground_truth_folder, GROUND_TRUTH_FILE_NAME)
@@ -127,9 +131,13 @@ def ParseResults_SubSubfolder(subfolder,subfolder_list, subfolder_path,dataset_g
     # print(RESULTS_FILE_NAME)
     # print("\t\t", TERMINAL_COMMAND)
     # print(os.getcwd())
+    print("*******CMD",TERMINAL_COMMAND)
+    print("*******PATH",subfolder_path)
+    if external_server_evaluation !=None:
+        return TERMINAL_COMMAND
     result = RunTerminalCommand(subfolder_path, TERMINAL_COMMAND)
     # print("zew")
-    rmse_data = FilterOutputToExtractRMSEData(result.stdout,subfolder_path)
+    rmse_data = FilterOutputToExtractRMSEData(result.stdout,path = subfolder_path)
     print("RMSE:",rmse_data)
     if rmse_data != -1:
 
@@ -144,6 +152,7 @@ def ParseResults_SubSubfolder(subfolder,subfolder_list, subfolder_path,dataset_g
     # else:
     #     new_row = {'Timestamped Folder Name': timestamped_folder, subfolder: rmse_data}
     #     df = df.append(new_row, ignore_index=True)
+    return rmse_data
 
 def ParseResults():
     # get a list of all the timestamped folders in the root directory
