@@ -1,0 +1,6 @@
+# parameters for evo tools for parseResults_Generic.py
+ROOT_DIR: /Datasets/optimization
+dataset_ground_truth_folder: GA
+STEREO_FOLDER_NAME: stereo
+test_parameter: baseline_ORBextractor_nFeatures
+GROUND_TRUTH_FILE_NAME: Daytime_Normal_GroundTruth_Transformed_clean.tum

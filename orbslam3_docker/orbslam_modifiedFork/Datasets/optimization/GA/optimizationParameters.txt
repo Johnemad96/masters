@@ -1,0 +1,6 @@
+# parameters for geneticAlgorithm.py
+dataset_dir: /Datasets/carlaDatasets
+root_dir: /Datasets/optimization/GA/
+test_results_path: /Datasets/optimization/GA/GAtests/
+test_parameter: 2params_baseline_ORBextractor_nFeatures
+results_evaluation_path:  /Datasets/carlaDatasets/justForPlotingZIPResults
