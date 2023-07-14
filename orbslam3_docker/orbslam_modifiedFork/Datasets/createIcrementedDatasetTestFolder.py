@@ -29,7 +29,10 @@ def create_incremented_folder(path,folder_name_suffix=None):
 
     # Create the new directory
     new_dir_path = os.path.join(path, new_dir)
-    os.makedirs(new_dir_path, exist_ok=True)
+    # python 2 doesn't have "exist_ok"
+    # os.makedirs(new_dir_path, exist_ok=True)
+    os.makedirs(new_dir_path)
+
     
     return new_dir_path
 
