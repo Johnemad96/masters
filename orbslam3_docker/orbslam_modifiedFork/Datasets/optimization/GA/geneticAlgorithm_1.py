@@ -113,15 +113,15 @@ class Population :
         self.chromosomes = []
         if init :
             self.chromosomes = [Chromosome(chromosomeSize , function) for i in range(populationSize)]
-            self.chromosomes.sort(key = lambda x:x.fitness, reverse=True)
+            self.chromosomes.sort(key = lambda x:x.fitness)
             self.fittest = self.chromosomes[0]
     
     def getNFittestChromosomes(self, n):
-        self.chromosomes.sort(key = lambda x:x.fitness, reverse=True)
+        self.chromosomes.sort(key = lambda x:x.fitness)
         return self.chromosomes[:n]
     
     def findTheFittest(self):
-        self.chromosomes.sort(key = lambda x:x.fitness, reverse=True)
+        self.chromosomes.sort(key = lambda x:x.fitness)
         self.fittest = self.chromosomes[0]
     
     def calculateTheFitnessForAll(self):
@@ -174,7 +174,7 @@ class GeneticAlgorithm :
         for i in range(self.tournamentSize):
             index = random.randint(0, len(population.chromosomes) -1)
             tournamentPool.append(population.chromosomes[index])
-        tournamentPool.sort(key = lambda x:x.fitness, reverse=True)
+        tournamentPool.sort(key = lambda x:x.fitness)
         return tournamentPool[0]
 
     def rouletteWheelSelection(self, population):
@@ -232,13 +232,15 @@ for i in range(MAX_GENERATIONS):
     # Check if fitness has improved
     if USE_STALL_GEN != True:
         continue
-    if prev_best_fitness is not None and population.fittest.fitness <= prev_best_fitness:
+    # law el error bada2 yezid tany ba3d makan olayel ma3naha eni kont f makan kowayes aw fi rakam kwoayes
+    # the idea is en el rakam mesh hayzid 20 mara wara ba3d msln
+    if prev_best_fitness is not None and population.fittest.fitness >= prev_best_fitness:
         stall_counter += 1
     else:
         stall_counter = 0
+        # Update previous best fitness
+        prev_best_fitness = population.fittest.fitness
     
-    # Update previous best fitness
-    prev_best_fitness = population.fittest.fitness
     
     # Check if stall limit has been reached
     if stall_counter >= STALL_LIMIT:
