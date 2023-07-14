@@ -41,7 +41,7 @@ ELITISM_SIZE = 5
 
 # Whether to use mutation in the genetic algorithm.
 # If this is set to False, the bitFlipMutation method will not be called, so no bits will be flipped in the chromosomes.
-USE_MUTATION = False
+USE_MUTATION = True
 
 # The method used to select parents for crossover.
 # If this is set to 'tournament', tournament selection is used.
@@ -158,7 +158,7 @@ class GeneticAlgorithm :
         newPopulation = Population(self.populationSize, self.chromosomeSize, self.function, False)
         newPopulation.chromosomes = temp
         newPopulation.findTheFittest()
-        newPopulation.calculateTheFitnessForAll()
+        # newPopulation.calculateTheFitnessForAll()
         return newPopulation
         
     def bitFlipMutation(self , child):
@@ -199,7 +199,7 @@ class GeneticAlgorithm :
 # Function to be optimized
 def f(param1, param2):
     print("#$%*** PARAMERTERS = ",param1,param2)
-    sys.exit()
+    # sys.exit()
     # Here, replace with your SLAM system function
     # Run your SLAM system with param1 and param2, get the trajectory and calculate the RMSE
 
