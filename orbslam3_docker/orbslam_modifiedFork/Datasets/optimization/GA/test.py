@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 import os
 import sys
 current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -16,6 +16,7 @@ from parseResults import ParseResults_SubSubfolder, Update_Global_Variables
 from automateORBSLAM import list_bag_files, Run_ORBSlam_and_Dataset
 from parseResults_Generic import find_files
 from std_msgs.msg import String, Float32
+import time
 # quick test
 # import sys
 # # import rospy
@@ -52,8 +53,9 @@ class Sender:
         # rospy.init_node('sender')
         self.publisher = rospy.Publisher('cmd_from_GA', String, queue_size=10)
     def send(self, data):
-        msg = Float32()
+        msg = String()
         msg.data = data
+        # print(msg.data)
         self.publisher.publish(msg)
 
 
@@ -94,8 +96,8 @@ if __name__ == "__main__":
                                 dataset_ground_truth_folder=evaluationParameters['dataset_ground_truth_folder'], 
                                 Stereo_Folder_Name=resultInstance_Index, 
                                 external_server_evaluation=True)
-        print(eval_command)
-    # eval_command = "evo_ape tum /Datasets/optimization/GA/Daytime_Normal_GroundTruth_Transformed_clean.tum /Datasets/optimization/GA/GAtests/21_2params_baseline_ORBextractor_nFeatures/01_0095_0600/FrameTrajectory_TUM_Format.txt --align --save_results /Datasets/optimization/GA/GAtests/21_2params_baseline_ORBextractor_nFeatures/01_0095_0600/21_2params_baseline_ORBextractor_nFeatures_01_0095_0600_ALIGN_results.zip"
+        # print(eval_command)
+    # eval_command = "evo_ape tum /Datasets/optimization/GA/Daytime_Normal_GroundTruth_Transformed_clean.tum /Datasets/optimization/GA/GAtests/22_2params_baseline_ORBextractor_nFeatures/01_0095_0600/FrameTrajectory_TUM_Format.txt --align --save_results /Datasets/optimization/GA/GAtests/22_2params_baseline_ORBextractor_nFeatures/01_0095_0600/22_2params_baseline_ORBextractor_nFeatures_01_0095_0600_ALIGN_results.zip"
     # rospy.wait_for_service('evaluate_SLAM_Evo')
     # try:
     #     evaluate_SLAM_Evo = rospy.ServiceProxy('evaluate_SLAM_Evo', evaluateSLAMEvo)
@@ -103,8 +105,10 @@ if __name__ == "__main__":
     # except rospy.ServiceException as e:
     #     print("Service call failed: %s"%e)    
     rospy.init_node('GA_Node')
-    receiver = Receiver(rospy)
     sender = Sender(rospy)
+    time.sleep(1)
+    receiver = Receiver(rospy)
+    time.sleep(1)
     sender.send(eval_command)
     receiver.spin()
     print(received_rmse)

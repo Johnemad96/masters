@@ -27,7 +27,7 @@ def requestEvaluation(eval_command):
     except rospy.ServiceException as e:
         print("Service call failed: %s"%e)
         resp1 = -999
-    return resp1
+    return resp1.rmse
 
 class Receiver:
     def __init__(self,rospy):
@@ -69,10 +69,14 @@ if __name__ == "__main__":
     rospy.init_node('evoClient_middle_node')
     receiver = Receiver(rospy)
     sender = Sender(rospy)
+    print("before spin")
     receiver.spin()
+    print("after spin")
     if received_cmd != "" and received_cmd != last_received_cmd:
+        print("requesting evaluation")
         rmse = requestEvaluation(received_cmd)
         last_received_cmd = received_cmd
+        print(rmse)
     sender.send(rmse)
     
     
