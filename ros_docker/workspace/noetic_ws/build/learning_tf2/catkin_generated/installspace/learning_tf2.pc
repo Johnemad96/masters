@@ -1,0 +1,8 @@
+prefix=/home/workspace/noetic_ws/install
+
+Name: learning_tf2
+Description: Description of learning_tf2
+Version: 0.0.0
+Cflags: -I${prefix}/include
+Libs: -L${prefix}/lib 
+Requires: message_runtime

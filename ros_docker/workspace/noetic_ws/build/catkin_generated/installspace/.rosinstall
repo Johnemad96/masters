@@ -1,0 +1,2 @@
+- setup-file:
+    local-name: /home/workspace/noetic_ws/install/setup.sh

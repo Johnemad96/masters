@@ -1,0 +1,10 @@
+(cl:defpackage learning_tf2-srv
+  (:use )
+  (:export
+   "EVALUATESLAMEVO"
+   "<EVALUATESLAMEVO-REQUEST>"
+   "EVALUATESLAMEVO-REQUEST"
+   "<EVALUATESLAMEVO-RESPONSE>"
+   "EVALUATESLAMEVO-RESPONSE"
+  ))
+

@@ -1,0 +1,2 @@
+learning_tf2
+-DCATKIN_DEVEL_PREFIX=/home/workspace/noetic_ws/devel -DCMAKE_INSTALL_PREFIX=/home/workspace/noetic_ws/install -G Unix Makefiles
