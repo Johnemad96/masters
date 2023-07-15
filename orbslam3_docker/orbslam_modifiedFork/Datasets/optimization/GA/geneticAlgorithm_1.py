@@ -1,11 +1,33 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 import random
 import pandas as pd
-import sys
+# import sys
 import math
+
+# ROS IMPORTS
+import os
+import sys
+current_dir = os.path.dirname(os.path.abspath(__file__))
+# parent_dir = os.path.dirname(current_dir)
+parent_dir = os.sep.join(current_dir.split(os.sep)[:-2])
+print(parent_dir)
+sys.path.insert(1, parent_dir)
+
+import rospy
+
+from changeYamlFileValues import Change_Yaml_Parameters
+from readParams import Read_Required_Params
+from createIcrementedDatasetTestFolder import create_incremented_folder
+from parseResults import ParseResults_SubSubfolder, Update_Global_Variables
+from automateORBSLAM import list_bag_files, Run_ORBSlam_and_Dataset
+from parseResults_Generic import find_files
+from std_msgs.msg import String, Float32
+import time
+# END OF ROS IMPORTS
+
 # Parameters
 # The number of individuals in the population.
-POPULATION_SIZE = 70
+POPULATION_SIZE = 5
 
 # The length of the binary string that represents the parameters being optimized.
 # This should be twice the number of bits needed to represent the maximum parameter value in binary,
@@ -29,15 +51,15 @@ CROSSOVER_RATE = 0.8
 # The number of generations to run the genetic algorithm.
 # A generation is one cycle of the genetic algorithm, including selection, crossover, mutation, 
 # and fitness evaluation.
-MAX_GENERATIONS = 50
+MAX_GENERATIONS = 5
 
 # The number of individuals selected for the tournament in tournament selection.
 # The individual with the highest fitness in the tournament is selected as a parent.
-TOURNAMENT_SIZE = 4
+TOURNAMENT_SIZE = 2
 
 # The number of the fittest individuals that are automatically passed to the next generation.
 # This is a form of elitism, which ensures that the best solutions found so far are not lost.
-ELITISM_SIZE = 5
+ELITISM_SIZE = 1
 
 # Whether to use mutation in the genetic algorithm.
 # If this is set to False, the bitFlipMutation method will not be called, so no bits will be flipped in the chromosomes.
@@ -66,8 +88,68 @@ PARAM2_MIN = 600  # minimum value for parameter 2
 PARAM2_MAX = 1500 # maximum value for parameter 2
 GENE2_LENGTH_BINARY = 11 #(UP TO 2048)
 
+# Track Generation Number
+Current_Generation = 0
+
 results = pd.DataFrame(columns=['Generation', 'Solution', 'Fitness', 'Parameters'])
 # PATH_TO_CSV = 
+
+# ROS CLASSES
+received_rmse = 0
+last_received_rmse = 0
+parameters = Read_Required_Params('optimizationParameters.txt')
+dataset_dir = parameters['dataset_dir']
+root_dir = parameters['root_dir']
+test_results_path = parameters['test_results_path']
+test_parameter = parameters['test_parameter']
+
+bag_files, filtered_files = list_bag_files(dataset_dir, ["20230331_1", "normal"])
+pathToSaveTestResults_testParameter = create_incremented_folder(test_results_path, folder_name_suffix=test_parameter)
+
+# ROS GLOBAL VARIABLES
+
+# ROS CLASSES
+def is_float_num(n):
+    return isinstance(n, (int, float)), isinstance(n, float)
+
+class Receiver:
+    def __init__(self,rospy):
+        self.received_rmse=0
+        self.received_expected_data = False
+        # rospy.init_node('receiver')
+        rospy.Subscriber('rmse_to_GA', Float32, self.callback)
+
+    def callback(self, msg):
+        # global received_rmse
+        rospy.loginfo('Received: %s', msg.data)
+        is_digit, is_float = is_float_num(msg.data)
+        if is_digit == True:
+            self.received_expected_data = True
+            self.received_rmse = msg.data
+
+    def spin(self):
+        rate = rospy.Rate(1)  # 1 Hz
+        while not rospy.is_shutdown() and not self.received_expected_data:
+            rate.sleep()
+        self.received_expected_data = False  
+
+class Sender:
+    def __init__(self,rospy):
+        # rospy.init_node('sender')
+        self.publisher = rospy.Publisher('cmd_from_GA', String, queue_size=10)
+    def send(self, data):
+        msg = String()
+        msg.data = data
+        # print(msg.data)
+        self.publisher.publish(msg)
+
+# ROS NODE INIT, SENDER/RECEIVER INIT
+rospy.init_node('GA_Node')
+sender = Sender(rospy)
+time.sleep(1)
+receiver = Receiver(rospy)
+time.sleep(1)
+# END OF ROS CLASSES
 
 class Chromosome :
     def __init__(self , length, function):
@@ -76,6 +158,7 @@ class Chromosome :
         # for i in range(length):
         #     self.genes += str(random.randint(0, 1)) 
         self.genes = self.generate_genes(GENE1_LENGTH_BINARY) + self.generate_genes(GENE2_LENGTH_BINARY)
+        # print(self.genes)
         self.calculateTheFitness()    
     
     def generate_genes(self, length):
@@ -85,11 +168,20 @@ class Chromosome :
         return genes.zfill(length)
 
     def calculateTheFitness(self):
+        global results
         param1, param2 = self.convertToDecimal()
         fitnessValue = self.function(param1, param2)
         self.fitness = fitnessValue
+        results = results.append({
+        'Generation': Current_Generation,
+        'Solution': self.genes,
+        'Fitness': self.fitness,
+        'Parameters': (param1, param2)
+        }, ignore_index=True)
+        
         
     def convertToDecimal(self):
+        global PARAM1_MAX, PARAM1_MIN, PARAM2_MAX, PARAM2_MIN
         # Split genes into two parts
         # genes1 = self.genes[:len(self.genes)//2]
         # genes2 = self.genes[len(self.genes)//2:]
@@ -97,15 +189,16 @@ class Chromosome :
         # Split genes into two parts based on the lengths of the binary representations for each parameter
         genes1 = self.genes[:GENE1_LENGTH_BINARY]
         genes2 = self.genes[GENE1_LENGTH_BINARY:GENE1_LENGTH_BINARY+GENE2_LENGTH_BINARY]
-    
+        # print(genes1, genes2)
         # Convert binary strings to integers
         decimal1 = int(genes1, 2)
         decimal2 = int(genes2, 2)
-        
+        # print(decimal1, decimal2)
         # Scale integers to parameter ranges
-        param1 = math.ceil((decimal1 / (2**len(genes1) - 1)) * (PARAM1_MAX - PARAM1_MIN) + PARAM1_MIN) * 1.0
-        param2 = math.ceil((decimal2 / (2**len(genes2) - 1)) * (PARAM2_MAX - PARAM2_MIN) + PARAM2_MIN)
-
+        param1 = math.ceil(((decimal1 * 1.0) / (2**len(genes1) - 1)) * (PARAM1_MAX - PARAM1_MIN) + PARAM1_MIN) * 1.0
+        param2 = math.ceil(((decimal2 * 1.0) / (2**len(genes2) - 1)) * (PARAM2_MAX - PARAM2_MIN) + PARAM2_MIN)
+        print ((decimal1 / (2**len(genes1) - 1)) , "*", (PARAM1_MAX - PARAM1_MIN) , "+", PARAM1_MIN) 
+        # print(param1,param2)
         return param1, param2
 
 class Population :
@@ -193,63 +286,124 @@ class GeneticAlgorithm :
         temp[crossOverPoint:] = parent2.genes[crossOverPoint:]
         child = Chromosome(self.chromosomeSize, self.function)
         child.genes = ''.join(temp)
-        child.calculateTheFitness()
+        if not USE_MUTATION:
+            child.calculateTheFitness()
         return child
     
 # Function to be optimized
 def f(param1, param2):
     print("#$%*** PARAMERTERS = ",param1,param2)
     # sys.exit()
+    global receiver, sender
+    global parameters, dataset_dir, root_dir, test_results_path, test_parameter, bag_files, filtered_files, pathToSaveTestResults_testParameter
     # Here, replace with your SLAM system function
+
+    new_ThDepth = param1
+    new_ORBextractor_nFeatures = int(param2)
+
+    new_ThDepth = new_ThDepth*1.0
+    Change_Yaml_Parameters(new_ThDepth=new_ThDepth, new_ORBextractor_nFeatures = new_ORBextractor_nFeatures)
+    # pathToSaveTestResults = os.path.join(pathToSaveTestResults_testParameter,((str(int(new_ThDepth)).zfill(4)) +"_"+ (str(new_ORBextractor_nFeatures).zfill(4))).replace('.', '_'))
+
+    pathToSaveTestResults = create_incremented_folder(pathToSaveTestResults_testParameter, folder_name_suffix=((str(int(new_ThDepth)).zfill(4)) +"_"+ (str(new_ORBextractor_nFeatures).zfill(4))).replace('.', '_'))
+
+    # os.makedirs(pathToSaveTestResults, exist_ok=True)
+    print("running orb slam")
+    Run_ORBSlam_and_Dataset(filtered_files[0], pathToSaveTestResults)
+    # time.sleep(3)
+
+    # full_path, relative_path = find_files(parameters['ROOT_DIR'], "FrameTrajectory_TUM_Format.txt", parameters['STEREO_FOLDER_NAME'],parameters['test_parameter'])
+    evaluationParameters =Update_Global_Variables("parseResultsParameters.txt")
+    _ , resultInstance_Index = os.path.split(pathToSaveTestResults_testParameter)
+    subfolder_path, subfolder = os.path.split(pathToSaveTestResults)
+    subfolder_path = (os.path.join(subfolder_path, subfolder))
+    print(resultInstance_Index,"\n", subfolder,"\n" ,subfolder_path,"\n", os.getcwd())
+    if "FrameTrajectory_TUM_Format.txt" in sorted(os.listdir(pathToSaveTestResults)):
+        eval_command = ParseResults_SubSubfolder(subfolder, sorted(os.listdir(subfolder_path)),
+                                subfolder_path, 
+                                dataset_ground_truth_folder=evaluationParameters['dataset_ground_truth_folder'], 
+                                Stereo_Folder_Name=resultInstance_Index, 
+                                external_server_evaluation=True)
+        sender.send(eval_command)
+        receiver.spin()
+        receiver.received_rmse
+        return receiver.received_rmse
     # Run your SLAM system with param1 and param2, get the trajectory and calculate the RMSE
 
     # return the negative RMSE as the fitness
     # return -RMSE
-    pass
 
-# Generate the initial population
-initialPopulation = Population(populationSize = POPULATION_SIZE, chromosomeSize = GENOME_LENGTH, function = f, init = True)
-
-# Create an instance of Genetic Algorithm
-GeneticAlgo = GeneticAlgorithm(populationSize = POPULATION_SIZE, chromosomeSize = GENOME_LENGTH, tournamentSize = TOURNAMENT_SIZE, elitismSize = ELITISM_SIZE, mutationRate = MUTATION_RATE, function = f)
-
-population = initialPopulation
-
-# Repeat the process for the number of generations
-for i in range(MAX_GENERATIONS):    
-    population = GeneticAlgo.reproduction(population)
-    param1, param2 = population.fittest.convertToDecimal()
-    print("# Generation: ", i)
-    print("\t solution: ", population.fittest.genes)
-    print("\t fitness: ", population.fittest.fitness)
-    print("\t parameters: ", param1, param2)
-    results = results.append({
-    'Generation': i,
-    'Solution': population.fittest.genes,
-    'Fitness': population.fittest.fitness,
-    'Parameters': (param1, param2)
-    }, ignore_index=True)
-    # Check if fitness has improved
-    if USE_STALL_GEN != True:
-        continue
-    # law el error bada2 yezid tany ba3d makan olayel ma3naha eni kont f makan kowayes aw fi rakam kwoayes
-    # the idea is en el rakam mesh hayzid 20 mara wara ba3d msln
-    if prev_best_fitness is not None and population.fittest.fitness >= prev_best_fitness:
-        stall_counter += 1
+    # pass
     else:
-        stall_counter = 0
-        # Update previous best fitness
-        prev_best_fitness = population.fittest.fitness
-    
-    
-    # Check if stall limit has been reached
-    if stall_counter >= STALL_LIMIT:
-        print("Terminating due to stall in fitness improvement.")
-        break
+        return 999.0
 
-# Print the best solution
-print("Best solution: ", population.fittest.genes)
-print("Best fitness: ", population.fittest.fitness)
-best_param1, best_param2 = population.fittest.convertToDecimal()
-print("Best parameters: ", best_param1, best_param2)
-results.to_csv('results.csv', index=False)
+if __name__ == "__main__":
+
+
+    # Generate the initial population
+    initialPopulation = Population(populationSize = POPULATION_SIZE, chromosomeSize = GENOME_LENGTH, function = f, init = True)
+
+    # Create an instance of Genetic Algorithm
+    GeneticAlgo = GeneticAlgorithm(populationSize = POPULATION_SIZE, chromosomeSize = GENOME_LENGTH, tournamentSize = TOURNAMENT_SIZE, elitismSize = ELITISM_SIZE, mutationRate = MUTATION_RATE, function = f)
+
+    population = initialPopulation
+
+    # Create empty lists for each column
+    generation_list = ["*"]
+    solution_list = ["*"]
+    fitness_list = ["*"]
+    parameters_list = ["*"]
+
+    with open(os.path.join(pathToSaveTestResults_testParameter,'output.txt'), 'a') as f:
+        # Repeat the process for the number of generations
+        for i in range(MAX_GENERATIONS):
+            Current_Generation = i    
+            population = GeneticAlgo.reproduction(population)
+            param1, param2 = population.fittest.convertToDecimal()
+            print >>f, "# Generation: ", i 
+            print >>f, "\t solution: ", population.fittest.genes
+            print >>f, "\t fitness: ", population.fittest.fitness
+            print >>f, "\t parameters: ", param1, param2
+            # results = results.append({
+            # 'Generation': i,
+            # 'Solution': population.fittest.genes,
+            # 'Fitness': population.fittest.fitness,
+            # 'Parameters': (param1, param2)
+            # }, ignore_index=True)
+            generation_list.append(i)
+            solution_list.append(population.fittest.genes)
+            fitness_list.append(population.fittest.fitness)
+            parameters_list.append((param1, param2))
+            # Check if fitness has improved
+            if USE_STALL_GEN != True:
+                continue
+            # law el error bada2 yezid tany ba3d makan olayel ma3naha eni kont f makan kowayes aw fi rakam kwoayes
+            # the idea is en el rakam mesh hayzid 20 mara wara ba3d msln
+            if prev_best_fitness is not None and population.fittest.fitness >= prev_best_fitness:
+                stall_counter += 1
+            else:
+                stall_counter = 0
+                # Update previous best fitness
+                prev_best_fitness = population.fittest.fitness
+            
+            
+            # Check if stall limit has been reached
+            if stall_counter >= STALL_LIMIT:
+                print("Terminating due to stall in fitness improvement.")
+                break
+    new_results = pd.DataFrame({
+    'Generation': generation_list,
+    'Solution': solution_list,
+    'Fitness': fitness_list,
+    'Parameters': parameters_list
+    })
+
+    # Append the new DataFrame to the existing one
+    results = results.append(new_results, ignore_index=True, sort=False)
+
+    # Print the best solution
+    print("Best solution: ", population.fittest.genes)
+    print("Best fitness: ", population.fittest.fitness)
+    best_param1, best_param2 = population.fittest.convertToDecimal()
+    print("Best parameters: ", best_param1, best_param2)
+    results.to_csv(os.path.join(pathToSaveTestResults_testParameter,'results.csv'), index=False)

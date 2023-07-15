@@ -36,11 +36,17 @@ class Receiver:
         rospy.Subscriber('cmd_from_GA', String, self.callback)
 
     def callback(self, msg):
-        global received_cmd
+        global received_cmd, last_received_cmd
         rospy.loginfo('Received: %s', msg.data)
         if msg.data.startswith("evo_ape"):
             self.received_expected_data = True
             received_cmd = msg.data
+            if received_cmd != "" and received_cmd != last_received_cmd:
+                print("requesting evaluation")
+                rmse = requestEvaluation(received_cmd)
+                last_received_cmd = received_cmd
+                # print(rmse)
+            sender.send(rmse)
 
     def spin(self):
         rate = rospy.Rate(1)  # 1 Hz
@@ -56,7 +62,9 @@ class Sender:
         msg = Float32()
         msg.data = data
         self.publisher.publish(msg)
-
+rospy.init_node('evoClient_middle_node')
+receiver = Receiver(rospy)
+sender = Sender(rospy)
 if __name__ == "__main__":
     # eval_command = "evo_ape tum /Datasets/optimization/GA/Daytime_Normal_GroundTruth_Transformed_clean.tum /Datasets/optimization/GA/GAtests/21_2params_baseline_ORBextractor_nFeatures/01_0095_0600/FrameTrajectory_TUM_Format.txt --align --save_results /Datasets/optimization/GA/GAtests/21_2params_baseline_ORBextractor_nFeatures/01_0095_0600/21_2params_baseline_ORBextractor_nFeatures_01_0095_0600_ALIGN_results.zip"
     
@@ -66,17 +74,15 @@ if __name__ == "__main__":
     #     resp1 = evaluate_SLAM_Evo(eval_command)
     # except rospy.ServiceException as e:
     #     print("Service call failed: %s"%e)
-    rospy.init_node('evoClient_middle_node')
-    receiver = Receiver(rospy)
-    sender = Sender(rospy)
-    print("before spin")
-    receiver.spin()
-    print("after spin")
-    if received_cmd != "" and received_cmd != last_received_cmd:
-        print("requesting evaluation")
-        rmse = requestEvaluation(received_cmd)
-        last_received_cmd = received_cmd
-        print(rmse)
-    sender.send(rmse)
+    # print("before spin")
+    # receiver.spin()
+    rospy.spin()
+    # print("after spin")
+    # if received_cmd != "" and received_cmd != last_received_cmd:
+    #     print("requesting evaluation")
+    #     rmse = requestEvaluation(received_cmd)
+    #     last_received_cmd = received_cmd
+    #     print(rmse)
+    # sender.send(rmse)
     
     
