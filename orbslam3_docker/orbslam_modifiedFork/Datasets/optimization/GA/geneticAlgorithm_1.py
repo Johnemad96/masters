@@ -353,17 +353,17 @@ if __name__ == "__main__":
     solution_list = ["*"]
     fitness_list = ["*"]
     parameters_list = ["*"]
-
+    best_param1, best_param2 = None, None
     with open(os.path.join(pathToSaveTestResults_testParameter,'output.txt'), 'a') as f:
         # Repeat the process for the number of generations
         for i in range(MAX_GENERATIONS):
             Current_Generation = i    
             population = GeneticAlgo.reproduction(population)
-            param1, param2 = population.fittest.convertToDecimal()
+            best_param1, best_param2 = population.fittest.convertToDecimal()
             print >>f, "# Generation: ", i 
             print >>f, "\t solution: ", population.fittest.genes
             print >>f, "\t fitness: ", population.fittest.fitness
-            print >>f, "\t parameters: ", param1, param2
+            print >>f, "\t parameters: ", best_param1, best_param2
             # results = results.append({
             # 'Generation': i,
             # 'Solution': population.fittest.genes,
@@ -373,7 +373,7 @@ if __name__ == "__main__":
             generation_list.append(i)
             solution_list.append(population.fittest.genes)
             fitness_list.append(population.fittest.fitness)
-            parameters_list.append((param1, param2))
+            parameters_list.append((best_param1, best_param2))
             # Check if fitness has improved
             if USE_STALL_GEN != True:
                 continue
@@ -391,15 +391,15 @@ if __name__ == "__main__":
             if stall_counter >= STALL_LIMIT:
                 print("Terminating due to stall in fitness improvement.")
                 break
-    new_results = pd.DataFrame({
-    'Generation': generation_list,
-    'Solution': solution_list,
-    'Fitness': fitness_list,
-    'Parameters': parameters_list
-    })
+        new_results = pd.DataFrame({
+        'Generation': generation_list,
+        'Solution': solution_list,
+        'Fitness': fitness_list,
+        'Parameters': parameters_list
+        })
 
-    # Append the new DataFrame to the existing one
-    results = results.append(new_results, ignore_index=True, sort=False)
+        # Append the new DataFrame to the existing one
+        results = results.append(new_results, ignore_index=True, sort=False)
 
     # Print the best solution
     print("Best solution: ", population.fittest.genes)
