@@ -155,6 +155,8 @@ class Chromosome :
     def __init__(self , length, function):
         self.genes = ""
         self.function = function
+        self.param1_decimal=0
+        self.param2_decimal=0
         # for i in range(length):
         #     self.genes += str(random.randint(0, 1)) 
         self.genes = self.generate_genes(GENE1_LENGTH_BINARY) + self.generate_genes(GENE2_LENGTH_BINARY)
@@ -170,13 +172,13 @@ class Chromosome :
     def calculateTheFitness(self):
         global results
         param1, param2 = self.convertToDecimal()
-        fitnessValue = self.function(param1, param2)
+        fitnessValue = self.function(self.param1_decimal, self.param2_decimal)
         self.fitness = fitnessValue
         results = results.append({
         'Generation': Current_Generation,
-        'Solution': self.genes,
+        'Solution': "\""+  self.genes + "\"",
         'Fitness': self.fitness,
-        'Parameters': (param1, param2)
+        'Parameters': (self.param1_decimal, self.param2_decimal)
         }, ignore_index=True)
         
         
@@ -197,7 +199,9 @@ class Chromosome :
         # Scale integers to parameter ranges
         param1 = math.ceil(((decimal1 * 1.0) / (2**len(genes1) - 1)) * (PARAM1_MAX - PARAM1_MIN) + PARAM1_MIN) * 1.0
         param2 = math.ceil(((decimal2 * 1.0) / (2**len(genes2) - 1)) * (PARAM2_MAX - PARAM2_MIN) + PARAM2_MIN)
-        print ((decimal1 / (2**len(genes1) - 1)) , "*", (PARAM1_MAX - PARAM1_MIN) , "+", PARAM1_MIN) 
+        self.param1_decimal = param1
+        self.param2_decimal = param2
+        # print ((decimal1 / (2**len(genes1) - 1)) , "*", (PARAM1_MAX - PARAM1_MIN) , "+", PARAM1_MIN) 
         # print(param1,param2)
         return param1, param2
 
@@ -337,6 +341,33 @@ def f(param1, param2):
     else:
         return 999.0
 
+
+def filter_group_by_min(dfg, col):
+    '''Get the rows with the minimum value of a column in a Pandas group
+
+    Args:
+        dfg (pandas.core.groupby): Pandas group
+        col (str): Column name in the DF for which you wish to calculate the minimum
+    '''
+    return dfg[dfg[col] == dfg[col].min()]
+
+
+def get_min_in_each_group(df, group_col, min_col):
+    '''Get the rows with the minimum value of a column in a Pandas group
+
+    Args:
+        df (pandas.dataframe): Pandas DataFrame
+        group_col (str): Column in the DF to group by
+        min_col (str): Column in the DF to calculate the minimum of
+    
+    Returns:
+        output (pandas.dataframe): Pandas DataFrame filtered by the minimum of each group
+    '''
+
+    output = df.groupby(group_col, group_keys=False)\
+        .apply(lambda x: filter_group_by_min(x, min_col))
+    return output
+
 if __name__ == "__main__":
 
 
@@ -354,56 +385,75 @@ if __name__ == "__main__":
     fitness_list = ["*"]
     parameters_list = ["*"]
     best_param1, best_param2 = None, None
-    with open(os.path.join(pathToSaveTestResults_testParameter,'output.txt'), 'a') as f:
+    # with open(os.path.join(pathToSaveTestResults_testParameter,'output.txt'), 'a') as f:
         # Repeat the process for the number of generations
-        for i in range(MAX_GENERATIONS):
-            Current_Generation = i    
-            population = GeneticAlgo.reproduction(population)
-            best_param1, best_param2 = population.fittest.convertToDecimal()
-            print >>f, "# Generation: ", i 
-            print >>f, "\t solution: ", population.fittest.genes
-            print >>f, "\t fitness: ", population.fittest.fitness
-            print >>f, "\t parameters: ", best_param1, best_param2
-            # results = results.append({
-            # 'Generation': i,
-            # 'Solution': population.fittest.genes,
-            # 'Fitness': population.fittest.fitness,
-            # 'Parameters': (param1, param2)
-            # }, ignore_index=True)
-            generation_list.append(i)
-            solution_list.append(population.fittest.genes)
-            fitness_list.append(population.fittest.fitness)
-            parameters_list.append((best_param1, best_param2))
-            # Check if fitness has improved
-            if USE_STALL_GEN != True:
-                continue
-            # law el error bada2 yezid tany ba3d makan olayel ma3naha eni kont f makan kowayes aw fi rakam kwoayes
-            # the idea is en el rakam mesh hayzid 20 mara wara ba3d msln
-            if prev_best_fitness is not None and population.fittest.fitness >= prev_best_fitness:
-                stall_counter += 1
-            else:
-                stall_counter = 0
-                # Update previous best fitness
-                prev_best_fitness = population.fittest.fitness
-            
-            
-            # Check if stall limit has been reached
-            if stall_counter >= STALL_LIMIT:
-                print("Terminating due to stall in fitness improvement.")
-                break
-        new_results = pd.DataFrame({
-        'Generation': generation_list,
-        'Solution': solution_list,
-        'Fitness': fitness_list,
-        'Parameters': parameters_list
-        })
+    for i in range(MAX_GENERATIONS):
+        Current_Generation = i    
+        population = GeneticAlgo.reproduction(population)
+        # best_param1, best_param2 = population.fittest.convertToDecimal()
+        best_param1, best_param2 = population.fittest.param1_decimal , population.fittest.param2_decimal
 
-        # Append the new DataFrame to the existing one
-        results = results.append(new_results, ignore_index=True, sort=False)
+        # print >>f, "# Generation: ", i 
+        # print >>f, "\t solution: ", population.fittest.genes
+        # print >>f, "\t fitness: ", population.fittest.fitness
+        # with open(os.path.join(pathToSaveTestResults_testParameter,'output_zew.txt'), 'a') as fff:
+        #     print >>fff, "\t parameters: ", best_param1, best_param2
+
+        # results = results.append({
+        # 'Generation': i,
+        # 'Solution': population.fittest.genes,
+        # 'Fitness': population.fittest.fitness,
+        # 'Parameters': (best_param1, best_param2)
+        # }, ignore_index=True)
+        print("### Gen", Current_Generation,
+            "\n\tBest solution: ", population.fittest.genes, 
+            "\n\tBest fitness: ", population.fittest.fitness,
+            "\n\tBest parameters: ",population.fittest.param1_decimal , population.fittest.param2_decimal )
+        generation_list.append(i)
+        solution_list.append("\""+ population.fittest.genes + "\"")
+        fitness_list.append(population.fittest.fitness)
+        # parameters_list.append((best_param1, best_param2))
+        parameters_list.append((population.fittest.param1_decimal , population.fittest.param2_decimal))
+        # Check if fitness has improved
+        if USE_STALL_GEN != True:
+            continue
+        # law el error bada2 yezid tany ba3d makan olayel ma3naha eni kont f makan kowayes aw fi rakam kwoayes
+        # the idea is en el rakam mesh hayzid 20 mara wara ba3d msln
+        if prev_best_fitness is not None and population.fittest.fitness >= prev_best_fitness:
+            stall_counter += 1
+        else:
+            stall_counter = 0
+            # Update previous best fitness
+            prev_best_fitness = population.fittest.fitness
+        
+        
+        # Check if stall limit has been reached
+        if stall_counter >= STALL_LIMIT:
+            print("Terminating due to stall in fitness improvement.")
+            break
+    new_results = pd.DataFrame({
+    'Generation': generation_list,
+    'Solution': solution_list,
+    'Fitness': fitness_list,
+    'Parameters': parameters_list
+    })
+
 
     # Print the best solution
-    print("Best solution: ", population.fittest.genes)
+    print("Best solution: ", "\""+ population.fittest.genes +"\"")
     print("Best fitness: ", population.fittest.fitness)
-    best_param1, best_param2 = population.fittest.convertToDecimal()
-    print("Best parameters: ", best_param1, best_param2)
+    # best_param1, best_param2 = population.fittest.convertToDecimal()
+    print("Best parameters: ",population.fittest.param1_decimal , population.fittest.param2_decimal)
+    # print("Best parameters: ", best_param1, best_param2)
+    # fittest_for_each_gen = results.groupby('Generation')['Fitness'].min()
+    # Calculate the minimum value in the Fitness column and group the DF by the Generation column
+
+    best_params_in_each_gen = get_min_in_each_group(results, 'Generation', 'Fitness')
+    
+    # Append the new DataFrame to the existing one
+    results = results.append(new_results, ignore_index=True, sort=False)
+    # Save the best parameters in a new file
+    best_params_in_each_gen.to_csv(os.path.join(pathToSaveTestResults_testParameter,'best_params_in_each_gen.csv'))
     results.to_csv(os.path.join(pathToSaveTestResults_testParameter,'results.csv'), index=False)
+    for i in range (len(fitness_list)-1):
+        print(generation_list(i), solution_list(i), fitness_list(i), parameters_list(i))
