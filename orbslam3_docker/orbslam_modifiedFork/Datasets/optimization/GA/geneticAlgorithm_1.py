@@ -51,7 +51,7 @@ CROSSOVER_RATE = 0.8
 # The number of generations to run the genetic algorithm.
 # A generation is one cycle of the genetic algorithm, including selection, crossover, mutation, 
 # and fitness evaluation.
-MAX_GENERATIONS = 5
+MAX_GENERATIONS = 8
 
 # The number of individuals selected for the tournament in tournament selection.
 # The individual with the highest fitness in the tournament is selected as a parent.
@@ -157,6 +157,7 @@ class Chromosome :
         self.function = function
         self.param1_decimal=0
         self.param2_decimal=0
+        self.fitness=0
         # for i in range(length):
         #     self.genes += str(random.randint(0, 1)) 
         self.genes = self.generate_genes(GENE1_LENGTH_BINARY) + self.generate_genes(GENE2_LENGTH_BINARY)
@@ -169,17 +170,18 @@ class Chromosome :
             genes += str(random.randint(0, 1))
         return genes.zfill(length)
 
-    def calculateTheFitness(self):
+    def calculateTheFitness(self,chromosome_in_population=False):
         global results
         param1, param2 = self.convertToDecimal()
         fitnessValue = self.function(self.param1_decimal, self.param2_decimal)
         self.fitness = fitnessValue
-        results = results.append({
-        'Generation': Current_Generation,
-        'Solution': "\""+  self.genes + "\"",
-        'Fitness': self.fitness,
-        'Parameters': (self.param1_decimal, self.param2_decimal)
-        }, ignore_index=True)
+        if chromosome_in_population == True:
+            results = results.append({
+            'Generation': Current_Generation,
+            'Solution': "\""+  self.genes + "\"",
+            'Fitness': self.fitness,
+            'Parameters': (self.param1_decimal, self.param2_decimal)
+            }, ignore_index=True)
         
         
     def convertToDecimal(self):
@@ -223,7 +225,7 @@ class Population :
     
     def calculateTheFitnessForAll(self):
         for chromosome in self.chromosomes:
-            chromosome.calculateTheFitness()
+            chromosome.calculateTheFitness(chromosome_in_population=True)
 
 class GeneticAlgorithm : 
     def __init__(self , populationSize , chromosomeSize , tournamentSize , elitismSize , mutationRate , function):
@@ -245,17 +247,22 @@ class GeneticAlgorithm :
                 parent1 = self.rouletteWheelSelection(population)
                 parent2 = self.rouletteWheelSelection(population)
             
-            child = self.onePointCrossOver(parent1, parent2)
+            # child = self.onePointCrossOver(parent1, parent2)
+
+            if random.random() < CROSSOVER_RATE:
+                child = self.onePointCrossOver(parent1, parent2)
+            else:
+                child = parent1 if random.random() < 0.5 else parent2
             
             if USE_MUTATION:
-                self.bitFlipMutation(child)
-            
+                child = self.bitFlipMutation(child)
+                child.calculateTheFitness(chromosome_in_population=True)
             temp.append(child)
             
         newPopulation = Population(self.populationSize, self.chromosomeSize, self.function, False)
         newPopulation.chromosomes = temp
-        newPopulation.findTheFittest()
         # newPopulation.calculateTheFitnessForAll()
+        newPopulation.findTheFittest()
         return newPopulation
         
     def bitFlipMutation(self , child):
@@ -264,7 +271,8 @@ class GeneticAlgorithm :
             geneslist = list(child.genes)
             geneslist[mutationPoint] = "0" if geneslist[mutationPoint] == "1" else "1"
             child.genes = ''.join(geneslist)
-            child.calculateTheFitness()
+            # child.calculateTheFitness()
+        return child
 
     def tournamentSelection(self , population):
         tournamentPool = []
@@ -290,8 +298,9 @@ class GeneticAlgorithm :
         temp[crossOverPoint:] = parent2.genes[crossOverPoint:]
         child = Chromosome(self.chromosomeSize, self.function)
         child.genes = ''.join(temp)
-        if not USE_MUTATION:
-            child.calculateTheFitness()
+        # if not USE_MUTATION:
+            # child.calculateTheFitness()
+        # child.calculateTheFitness()
         return child
     
 # Function to be optimized
@@ -456,4 +465,4 @@ if __name__ == "__main__":
     best_params_in_each_gen.to_csv(os.path.join(pathToSaveTestResults_testParameter,'best_params_in_each_gen.csv'))
     results.to_csv(os.path.join(pathToSaveTestResults_testParameter,'results.csv'), index=False)
     for i in range (len(fitness_list)-1):
-        print(generation_list(i), solution_list(i), fitness_list(i), parameters_list(i))
+        print(generation_list[i], solution_list[i], fitness_list[i], parameters_list[i])
