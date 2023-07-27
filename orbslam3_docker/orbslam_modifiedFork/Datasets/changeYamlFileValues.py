@@ -11,7 +11,7 @@ import os
 # directory for yaml file
 root_dir_yaml = "/ORB_SLAM3/Examples"
 
-def Change_Yaml_Parameters(new_ThDepth = -1,new_ORBextractor_nFeatures = -1,Sensor_Setup = "Stereo" ):
+def Change_Yaml_Parameters(new_ThDepth = -1,new_ORBextractor_nFeatures = -1,Sensor_Setup = "Stereo", ORBextractor_iniThFAST = -1, ORBextractor_minThFAST = -1):
     path_to_yaml = os.path.join(root_dir_yaml, "Stereo" if Sensor_Setup == "Stereo" else "Stereo-Interial")
     with open(os.path.join(path_to_yaml,'EuRoC.yaml'), 'r') as file:
         lines = file.readlines()
@@ -30,6 +30,16 @@ def Change_Yaml_Parameters(new_ThDepth = -1,new_ORBextractor_nFeatures = -1,Sens
         if ('ORBextractor.nFeatures:' in line) and (new_ORBextractor_nFeatures != -1):
             words = line.split()
             words[1] = str(new_ORBextractor_nFeatures) #'new_value_for_ORBextractor.nFeatures'
+            lines[i] = ' '.join(words) + '\n'
+            continue
+        if ('ORBextractor.iniThFAST:' in line) and (ORBextractor_iniThFAST != -1):
+            words = line.split()
+            words[1] = str(ORBextractor_iniThFAST) #'new_value_for_ORBextractor.nFeatures'
+            lines[i] = ' '.join(words) + '\n'
+            continue
+        if ('ORBextractor.minThFAST:' in line) and (ORBextractor_minThFAST != -1):
+            words = line.split()
+            words[1] = str(ORBextractor_minThFAST) #'new_value_for_ORBextractor.nFeatures'
             lines[i] = ' '.join(words) + '\n'
             continue
 

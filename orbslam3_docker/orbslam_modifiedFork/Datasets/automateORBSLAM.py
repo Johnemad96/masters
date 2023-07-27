@@ -59,6 +59,49 @@ def Run_ORBSlam_and_Dataset(rosbagName, testResultDirectory=None):
         orbslam_process.send_signal(signal.SIGINT)
         time.sleep(5)
         orbslam_process.send_signal(signal.SIGINT)
+        # startDataset_process.send_signal(signal.SIGINT)
+
+
+    # Wait for a certain amount of time
+    time.sleep(5)
+
+    # # If the process is still running after this time, send a SIGTERM signal
+    if orbslam_process.poll() is None:
+        startDataset_process.terminate()
+    #     orbslam_process.terminate()
+    if startDataset_process.poll() is None:
+        startDataset_process.terminate()
+
+    # # Wait for a certain amount of time
+    # time.sleep(5)
+
+    # # If the process is still running after this time, send a SIGKILL signal
+    # if orbslam_process.poll() is None:
+    #     startDataset_process.kill()
+    #     orbslam_process.kill()
+
+    # Wait for the process to terminate and read its output
+    # stdout, stderr = orbslam_process.communicate()
+    ((orbslam_process.communicate()))
+    print("---------------------- BEFORE COMMUNICATE")
+    startDataset_process.communicate()
+    print("---------------------- after COMMUNICATE")
+
+
+    # print("%^&*&^%^& AFTER COMMUNICATE")
+
+    # try:
+    #     stdout, stderr = orbslam_process.communicate(timeout=10)
+    # except subprocess.TimeoutExpired:
+    #     orbslam_process.kill()
+    #     stdout, stderr = orbslam_process.communicate()
+
+    # try:
+    #     stdout, stderr = startDataset_process.communicate(timeout=10)
+    # except subprocess.TimeoutExpired:
+    #     orbslam_process.kill()
+    #     stdout, stderr = startDataset_process.communicate()
+    # stdout_dataset, stderr_dataset = startDataset_process.communicate()
 
 if __name__ == "__main__":
     parameters = Read_Required_Params('parameters.txt')

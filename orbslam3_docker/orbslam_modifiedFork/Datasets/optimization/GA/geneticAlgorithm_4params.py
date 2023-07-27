@@ -27,7 +27,7 @@ import time
 
 # Parameters
 # The number of individuals in the population.
-POPULATION_SIZE = 10
+POPULATION_SIZE = 20
 
 # The probability that a bit in a chromosome will be flipped 
 # (changed from 0 to 1 or from 1 to 0) during mutation.
@@ -40,15 +40,15 @@ CROSSOVER_RATE = 0.8
 # The number of generations to run the genetic algorithm.
 # A generation is one cycle of the genetic algorithm, including selection, crossover, mutation, 
 # and fitness evaluation.
-MAX_GENERATIONS = 8
+MAX_GENERATIONS = 30
 
 # The number of individuals selected for the tournament in tournament selection.
 # The individual with the highest fitness in the tournament is selected as a parent.
-TOURNAMENT_SIZE = 4
+TOURNAMENT_SIZE = 5
 
 # The number of the fittest individuals that are automatically passed to the next generation.
 # This is a form of elitism, which ensures that the best solutions found so far are not lost.
-ELITISM_SIZE = 1
+ELITISM_SIZE = 4
 
 # Whether to use mutation in the genetic algorithm.
 # If this is set to False, the bitFlipMutation method will not be called, so no bits will be flipped in the chromosomes.
@@ -101,7 +101,7 @@ GENOME_LENGTH = GENE1_LENGTH_BINARY + GENE2_LENGTH_BINARY + GENE3_LENGTH_BINARY 
 # Track Generation Number
 Current_Generation = 0
 
-results = pd.DataFrame(columns=['Generation', 'Solution', 'Fitness', 'Parameters'])
+results = pd.DataFrame(columns=['Generation', 'Solution', 'Fitness', 'Parameters','Fittest'])
 # PATH_TO_CSV = 
 
 # ROS CLASSES
@@ -190,7 +190,7 @@ class Chromosome :
     def combine_chromosome_from_gene(self):
         self.genes = self.gene1 + self.gene2 + self.gene3
 
-    def calculateTheFitness(self,chromosome_in_population=False):
+    def calculateTheFitness(self,chromosome_in_population=False,is_fittest=""):
         global results
         _,_ = self.convertToDecimal()
         fitnessValue = self.function(self.param1_decimal, self.param2_decimal,param3=self.param3_decimal, param4=self.param4_decimal)
@@ -200,7 +200,8 @@ class Chromosome :
             'Generation': Current_Generation,
             'Solution': "\""+  self.genes + "\"",
             'Fitness': self.fitness,
-            'Parameters': (self.param1_decimal, self.param2_decimal,self.param3_decimal, self.param4_decimal)
+            'Parameters': (self.param1_decimal, self.param2_decimal,self.param3_decimal, self.param4_decimal),
+            'Fittest' : ("Fittest" if (is_fittest.lower() == "fittest") else ("Elite" if (is_fittest.lower() == "elite") else "Population"))
             }, ignore_index=True)
         
         
@@ -263,8 +264,17 @@ class GeneticAlgorithm :
         self.function       = function
     
     def reproduction(self , population):
+        global results
         temp = []
         temp[:self.elitismSize] = population.getNFittestChromosomes(self.elitismSize)
+        for i in range(self.elitismSize):
+            results = results.append({
+                'Generation': Current_Generation,
+                'Solution': "\""+  temp[i].genes + "\"",
+                'Fitness': temp[i].fitness,
+                'Parameters': (temp[i].param1_decimal, temp[i].param2_decimal,temp[i].param3_decimal, temp[i].param4_decimal),
+                'Fittest' : "Fittest" if i == 0 else "Elite"
+                }, ignore_index=True)
         for i in range(self.elitismSize , self.populationSize):
             if SELECTION_METHOD == 'tournament':
                 parent1 = self.tournamentSelection(population)
@@ -273,12 +283,19 @@ class GeneticAlgorithm :
                 parent1 = self.rouletteWheelSelection(population)
                 parent2 = self.rouletteWheelSelection(population)
             
-            # child = self.onePointCrossOver(parent1, parent2)
+            child = self.onePointCrossOver(parent1, parent2)
 
-            if random.random() < CROSSOVER_RATE:
-                child = self.onePointCrossOver(parent1, parent2)
-            else:
-                child = parent1 if random.random() < 0.5 else parent2
+            # if random.random() < CROSSOVER_RATE:
+            #     child = self.onePointCrossOver(parent1, parent2)
+            # elif (child.genes == population.fittest.genes) :
+            #     # if (population.fittest.genes == parent1.genes):
+            #     #     child = parent2
+            #     # elif (population.fittest.genes == parent2.genes):
+            #     #     child = parent1
+            #     child = parent2 if (population.fittest.genes == parent1.genes) else parent1
+
+            # else:
+            #     child = parent1 if random.random() < 0.5 else parent2
             
             if USE_MUTATION:
                 child = self.bitFlipMutation(child)
@@ -316,7 +333,8 @@ class GeneticAlgorithm :
     def tournamentSelection(self , population):
         tournamentPool = []
         for i in range(self.tournamentSize):
-            index = random.randint(0, len(population.chromosomes) -1)
+            # start from 1 to exclude the fittest
+            index = random.randint(1, len(population.chromosomes) -1)
             tournamentPool.append(population.chromosomes[index])
         tournamentPool.sort(key = lambda x:x.fitness)
         return tournamentPool[0]
@@ -331,12 +349,23 @@ class GeneticAlgorithm :
                 return chromosome
     
     def onePointCrossOver(self , parent1 , parent2):
-        temp = []
-        crossOverPoint = random.randint(0, len(parent1.genes) -1)            
-        temp[:crossOverPoint] = parent1.genes[:crossOverPoint]
-        temp[crossOverPoint:] = parent2.genes[crossOverPoint:]
         child = Chromosome(self.chromosomeSize, self.function)
-        child.genes = ''.join(temp)
+        if random.random() < CROSSOVER_RATE:
+            # child = self.onePointCrossOver(parent1, parent2)
+            temp = []
+            crossOverPoint = random.randint(0, len(parent1.genes) -1)            
+            temp[:crossOverPoint] = parent1.genes[:crossOverPoint]
+            temp[crossOverPoint:] = parent2.genes[crossOverPoint:]
+            child.genes = ''.join(temp)
+        # elif (population.fittest.genes == parent1.genes) or (population.fittest.genes == parent2.genes) :
+        #     # if (population.fittest.genes == parent1.genes):
+        #     #     child = parent2
+        #     # elif (population.fittest.genes == parent2.genes):
+        #     #     child = parent1
+        #     child = parent2 if (population.fittest.genes == parent1.genes) else parent1
+
+        else:
+            child = parent1 if random.random() < 0.5 else parent2
         # if not USE_MUTATION:
             # child.calculateTheFitness()
         # child.calculateTheFitness()
@@ -442,6 +471,7 @@ if __name__ == "__main__":
     solution_list = ["*"]
     fitness_list = ["*"]
     parameters_list = ["*"]
+    fittest_list = ["*"]
     best_param1, best_param2 = None, None
     # with open(os.path.join(pathToSaveTestResults_testParameter,'output.txt'), 'a') as f:
         # Repeat the process for the number of generations
@@ -472,6 +502,7 @@ if __name__ == "__main__":
         fitness_list.append(population.fittest.fitness)
         # parameters_list.append((best_param1, best_param2))
         parameters_list.append((population.fittest.param1_decimal , population.fittest.param2_decimal,population.fittest.param3_decimal, population.fittest.param4_decimal))
+        fittest_list.append("Fittest")
         # Check if fitness has improved
         if USE_STALL_GEN != True:
             continue
@@ -493,7 +524,8 @@ if __name__ == "__main__":
     'Generation': generation_list,
     'Solution': solution_list,
     'Fitness': fitness_list,
-    'Parameters': parameters_list
+    'Parameters': parameters_list,
+    'Fittest': fittest_list
     })
 
 
