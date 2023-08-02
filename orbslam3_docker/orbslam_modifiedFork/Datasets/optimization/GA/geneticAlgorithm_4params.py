@@ -264,10 +264,12 @@ class GeneticAlgorithm :
         self.function       = function
     
     def reproduction(self , population):
-        global results
+        global results, Current_Generation
         temp = []
         temp[:self.elitismSize] = population.getNFittestChromosomes(self.elitismSize)
+        print("Starting Gen ", Current_Generation)
         for i in range(self.elitismSize):
+            print("\t ", i  ," ",temp[i].genes,"  rmse: ", temp[i].fitness , "Fittest" if i == 0 else "Elite")
             results = results.append({
                 'Generation': Current_Generation,
                 'Solution': "\""+  temp[i].genes + "\"",
@@ -275,7 +277,8 @@ class GeneticAlgorithm :
                 'Parameters': (temp[i].param1_decimal, temp[i].param2_decimal,temp[i].param3_decimal, temp[i].param4_decimal),
                 'Fittest' : "Fittest" if i == 0 else "Elite"
                 }, ignore_index=True)
-        for i in range(self.elitismSize , self.populationSize):
+        i = self.elitismSize
+        while i < self.populationSize:
             if SELECTION_METHOD == 'tournament':
                 parent1 = self.tournamentSelection(population)
                 parent2 = self.tournamentSelection(population)
@@ -285,22 +288,54 @@ class GeneticAlgorithm :
             
             child = self.onePointCrossOver(parent1, parent2)
 
-            # if random.random() < CROSSOVER_RATE:
-            #     child = self.onePointCrossOver(parent1, parent2)
-            # elif (child.genes == population.fittest.genes) :
-            #     # if (population.fittest.genes == parent1.genes):
-            #     #     child = parent2
-            #     # elif (population.fittest.genes == parent2.genes):
-            #     #     child = parent1
-            #     child = parent2 if (population.fittest.genes == parent1.genes) else parent1
-
-            # else:
-            #     child = parent1 if random.random() < 0.5 else parent2
-            
             if USE_MUTATION:
                 child = self.bitFlipMutation(child)
-                child.calculateTheFitness(chromosome_in_population=True)
+            # found = any(temp_chromosome.genes == child.genes for temp_chromosome in temp)
+            found = False
+            for temp_chromosome in temp:
+                if temp_chromosome.genes == child.genes:
+                    found = True
+                    break
+            if found:
+                print("**!!!!**DUPLICATE CHROMOSOME IN GEN ", Current_Generation,
+                    "\n\t\t Index inside this gen (pop): ",i ,
+                    "\n\t\t Chromosome is ", child.genes
+                    )
+                continue
+            child.calculateTheFitness(chromosome_in_population=True)
             temp.append(child)
+            print("\t ", i  ," ",temp[i].genes,"  rmse: ", temp[i].fitness, "Population")
+            i += 1
+        # for i in range(self.elitismSize , self.populationSize):
+        #     if SELECTION_METHOD == 'tournament':
+        #         parent1 = self.tournamentSelection(population)
+        #         parent2 = self.tournamentSelection(population)
+        #     elif SELECTION_METHOD == 'roulette':
+        #         parent1 = self.rouletteWheelSelection(population)
+        #         parent2 = self.rouletteWheelSelection(population)
+            
+        #     child = self.onePointCrossOver(parent1, parent2)
+
+        #     # if random.random() < CROSSOVER_RATE:
+        #     #     child = self.onePointCrossOver(parent1, parent2)
+        #     # elif (child.genes == population.fittest.genes) :
+        #     #     # if (population.fittest.genes == parent1.genes):
+        #     #     #     child = parent2
+        #     #     # elif (population.fittest.genes == parent2.genes):
+        #     #     #     child = parent1
+        #     #     child = parent2 if (population.fittest.genes == parent1.genes) else parent1
+
+        #     # else:
+        #     #     child = parent1 if random.random() < 0.5 else parent2
+            
+        #     if USE_MUTATION:
+        #         child = self.bitFlipMutation(child)
+        #         child.calculateTheFitness(chromosome_in_population=True)
+        #     found = any(temp_chromosome.genes == child.genes for temp_chromosome in temp)
+        #     if found:
+        #         i = i -1
+        #         continue
+        #     temp.append(child)
             
         newPopulation = Population(self.populationSize, self.chromosomeSize, self.function, False)
         newPopulation.chromosomes = temp

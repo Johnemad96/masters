@@ -14,7 +14,7 @@ def create_incremented_folder(path,folder_name_suffix=None):
     
     # If there are no directories yet, start with '01'
     if not dirs:
-        new_dir = '001'
+        new_dir = '00001'
     else:
         # Get the last directory in the list
         last_dir = dirs[-1]
@@ -23,7 +23,7 @@ def create_incremented_folder(path,folder_name_suffix=None):
         new_dir_num = int(last_dir) + 1
         
         # Format the new directory number with leading zeros
-        new_dir = str(new_dir_num).zfill(3)
+        new_dir = str(new_dir_num).zfill(5)
     if folder_name_suffix != None:
         new_dir = new_dir + "_" + folder_name_suffix
 

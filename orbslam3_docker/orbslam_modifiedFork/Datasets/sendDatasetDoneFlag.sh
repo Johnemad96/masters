@@ -15,5 +15,9 @@
 # rostopic pub /flagROSBagDone std_msgs/Int16 "data: 1"
 
 
-rosbag play $1
-rostopic pub /flagROSBagDone std_msgs/Int16 "data: 1"
+rosbag play $1 & 
+rosbag_pid=$!
+sleep 90
+kill -SIGINT $rosbag_pid
+rostopic pub -1 /flagROSBagDone std_msgs/Int16 "data: 1"
+

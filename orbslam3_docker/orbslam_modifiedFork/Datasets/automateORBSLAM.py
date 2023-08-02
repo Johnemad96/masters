@@ -40,11 +40,15 @@ def Run_ORBSlam_and_Dataset(rosbagName, testResultDirectory=None):
     # Start a command
     # this needs to be run from inside the docker container that has orbslam
 
-    orbslam_process = subprocess.Popen(["rosrun", "ORB_SLAM3" ,"Stereo", "/ORB_SLAM3/Vocabulary/ORBvoc.txt" ,"/ORB_SLAM3/Examples/Stereo/EuRoC.yaml", "false"], cwd= testResultDirectory)
+    orbslam_process = subprocess.Popen(["rosrun", "ORB_SLAM3" ,"Stereo", "/ORB_SLAM3/Vocabulary/ORBvoc.txt" ,"/ORB_SLAM3/Examples/Stereo/EuRoC.yaml", "false"],
+                                        cwd= testResultDirectory,
+                                        stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
     time.sleep(15)
     # rosbagName = "carlaDatasets/" + rosbagName
-    startDataset_process = subprocess.Popen(["/Datasets/sendDatasetDoneFlag.sh", rosbagName])
+    startDataset_process = subprocess.Popen(["/Datasets/sendDatasetDoneFlag.sh", rosbagName],
+                                        stdout=subprocess.DEVNULL,
+                                        stderr=subprocess.DEVNULL)
 
     # Wait for a certain amount of time
     time.sleep(90)
@@ -57,7 +61,11 @@ def Run_ORBSlam_and_Dataset(rosbagName, testResultDirectory=None):
     if orbslam_process.poll() is None:
         startDataset_process.send_signal(signal.SIGINT)
         orbslam_process.send_signal(signal.SIGINT)
-        time.sleep(5)
+        # startDataset_process.terminate()
+        # startDataset_process.wait()
+        # orbslam_process.terminate()
+        # startDataset_process.wait()
+        time.sleep(6)
         orbslam_process.send_signal(signal.SIGINT)
         # startDataset_process.send_signal(signal.SIGINT)
 
@@ -66,11 +74,11 @@ def Run_ORBSlam_and_Dataset(rosbagName, testResultDirectory=None):
     time.sleep(5)
 
     # # If the process is still running after this time, send a SIGTERM signal
-    if orbslam_process.poll() is None:
-        startDataset_process.terminate()
-    #     orbslam_process.terminate()
-    if startDataset_process.poll() is None:
-        startDataset_process.terminate()
+    # if orbslam_process.poll() is None:
+    #     startDataset_process.kill()
+    # #     orbslam_process.terminate()
+    # if startDataset_process.poll() is None:
+    #     startDataset_process.kill()
 
     # # Wait for a certain amount of time
     # time.sleep(5)
@@ -82,10 +90,10 @@ def Run_ORBSlam_and_Dataset(rosbagName, testResultDirectory=None):
 
     # Wait for the process to terminate and read its output
     # stdout, stderr = orbslam_process.communicate()
-    ((orbslam_process.communicate()))
-    print("---------------------- BEFORE COMMUNICATE")
-    startDataset_process.communicate()
-    print("---------------------- after COMMUNICATE")
+    # ((orbslam_process.communicate()))
+    # print("---------------------- BEFORE COMMUNICATE")
+    # startDataset_process.communicate()
+    # print("---------------------- after COMMUNICATE")
 
 
     # print("%^&*&^%^& AFTER COMMUNICATE")
