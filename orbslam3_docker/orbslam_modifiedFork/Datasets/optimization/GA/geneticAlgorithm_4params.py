@@ -27,7 +27,7 @@ import time
 
 # Parameters
 # The number of individuals in the population.
-POPULATION_SIZE = 20
+POPULATION_SIZE = 30
 
 # The probability that a bit in a chromosome will be flipped 
 # (changed from 0 to 1 or from 1 to 0) during mutation.
@@ -48,7 +48,7 @@ TOURNAMENT_SIZE = 5
 
 # The number of the fittest individuals that are automatically passed to the next generation.
 # This is a form of elitism, which ensures that the best solutions found so far are not lost.
-ELITISM_SIZE = 4
+ELITISM_SIZE = 3
 
 # Whether to use mutation in the genetic algorithm.
 # If this is set to False, the bitFlipMutation method will not be called, so no bits will be flipped in the chromosomes.
@@ -80,7 +80,7 @@ GENE2_LENGTH_BINARY = 11 #(UP TO 2048)
 #Param3 = iniThFAST
 PARAM3_MIN = 18  # minimum value for parameter 1
 PARAM3_MAX = 50  # maximum value for parameter 1
-GENE3_LENGTH_BINARY = 6 #(UP TO 128)
+GENE3_LENGTH_BINARY = 6 #(UP TO 64)
 
 # #Param4 = n of orb features
 # PARAM4_MIN = 600  # minimum value for parameter 2
@@ -96,7 +96,7 @@ GENE3_LENGTH_BINARY = 6 #(UP TO 128)
 #       so you need at least ceil(log2(110)) = 7 bits for param1 and
 #       ceil(log2(900)) = 11 bits for param2. 
 #       Therefore, the total GENOME_LENGTH should be at least 17 (7 + 10).
-GENOME_LENGTH = GENE1_LENGTH_BINARY + GENE2_LENGTH_BINARY + GENE3_LENGTH_BINARY #18
+GENOME_LENGTH = GENE1_LENGTH_BINARY + GENE2_LENGTH_BINARY + GENE3_LENGTH_BINARY #24 #18
 
 # Track Generation Number
 Current_Generation = 0
@@ -281,29 +281,36 @@ class GeneticAlgorithm :
         while i < self.populationSize:
             if SELECTION_METHOD == 'tournament':
                 parent1 = self.tournamentSelection(population)
-                parent2 = self.tournamentSelection(population)
+                parent2 = self.tournamentSelection(population,exclude = parent1)
             elif SELECTION_METHOD == 'roulette':
                 parent1 = self.rouletteWheelSelection(population)
                 parent2 = self.rouletteWheelSelection(population)
             
-            child = self.onePointCrossOver(parent1, parent2)
+            # child = self.onePointCrossOver(parent1, parent2)
+            child1,child2 = self.multiPointCrossOver(parent1, parent2,num_crossover_points=3)
 
             if USE_MUTATION:
-                child = self.bitFlipMutation(child)
+                child1 = self.bitFlipMutation(child1)
+                child2 = self.bitFlipMutation(child2)
             # found = any(temp_chromosome.genes == child.genes for temp_chromosome in temp)
-            found = False
-            for temp_chromosome in temp:
-                if temp_chromosome.genes == child.genes:
-                    found = True
-                    break
-            if found:
-                print("**!!!!**DUPLICATE CHROMOSOME IN GEN ", Current_Generation,
-                    "\n\t\t Index inside this gen (pop): ",i ,
-                    "\n\t\t Chromosome is ", child.genes
-                    )
-                continue
-            child.calculateTheFitness(chromosome_in_population=True)
-            temp.append(child)
+            # found = False
+            # for temp_chromosome in temp:
+            #     if temp_chromosome.genes == child.genes:
+            #         found = True
+            #         break
+            # if found:
+            #     print("**!!!!**DUPLICATE CHROMOSOME IN GEN ", Current_Generation,
+            #         "\n\t\t Index inside this gen (pop): ",i ,
+            #         "\n\t\t Chromosome is ", child.genes
+            #         )
+            #     continue
+            child1.calculateTheFitness(chromosome_in_population=True)
+            child2.calculateTheFitness(chromosome_in_population=True)
+            temp.append(child1)
+            temp.append(child2)
+            print("\t ", i  ," ",temp[i].genes,"  rmse: ", temp[i].fitness, "Population")
+            i += 1
+            temp.append(child2)
             print("\t ", i  ," ",temp[i].genes,"  rmse: ", temp[i].fitness, "Population")
             i += 1
         # for i in range(self.elitismSize , self.populationSize):
@@ -365,12 +372,16 @@ class GeneticAlgorithm :
                 # child.calculateTheFitness()
         return child
 
-    def tournamentSelection(self , population):
+    def tournamentSelection(self , population, exclude=None):
         tournamentPool = []
-        for i in range(self.tournamentSize):
+        # for i in range(self.tournamentSize):
+        while len(tournamentPool) < self.tournamentSize:
             # start from 1 to exclude the fittest
-            index = random.randint(1, len(population.chromosomes) -1)
-            tournamentPool.append(population.chromosomes[index])
+            index = random.randint(0, len(population.chromosomes) -1)
+            # tournamentPool.append(population.chromosomes[index])
+            chromosome = population.chromosomes[index]
+            if chromosome.genes != exclude.genes:
+                tournamentPool.append(chromosome)
         tournamentPool.sort(key = lambda x:x.fitness)
         return tournamentPool[0]
 
@@ -405,6 +416,40 @@ class GeneticAlgorithm :
             # child.calculateTheFitness()
         # child.calculateTheFitness()
         return child
+    
+    def multiPointCrossOver(self, parent1, parent2, num_crossover_points):
+        # Generate crossover points
+        crossover_points = sorted(random.sample(range(1, len(parent1.genes) - 1), num_crossover_points))
+        
+        # Initialize children genes
+        child1_genes = []
+        child2_genes = []
+        
+        if random.random() < self.mutationRate :
+            # Iterate through crossover points and alternate genes between parents
+            for i in range(num_crossover_points + 1):
+                start = crossover_points[i - 1] if i != 0 else 0
+                end = crossover_points[i] if i < num_crossover_points else len(parent1.genes)
+                
+                # If i is even, take genes from parent1 for child1 and parent2 for child2
+                if i % 2 == 0:
+                    child1_genes += parent1.genes[start:end]
+                    child2_genes += parent2.genes[start:end]
+                # If i is odd, take genes from parent2 for child1 and parent1 for child2
+                else:
+                    child1_genes += parent2.genes[start:end]
+                    child2_genes += parent1.genes[start:end]
+        else:
+            child1_genes = parent1.genes
+            child2_genes = parent2.genes
+        # Create child chromosomes
+        child1 = Chromosome(self.chromosomeSize, self.function)
+        child2 = Chromosome(self.chromosomeSize, self.function)
+        child1.genes = ''.join(child1_genes)
+        child2.genes = ''.join(child2_genes)
+        # child1.calculateTheFitness()
+        # child2.calculateTheFitness()
+        return child1, child2
     
 # Function to be optimized
 def f(param1, param2, param3=None, param4=None):
