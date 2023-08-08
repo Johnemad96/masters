@@ -69,8 +69,8 @@ def FilterOutputToExtractRMSEData(output,path=None):
         rmse = float(match.group(1))
     else:
         rmse = -1
-        print(output, "\n")
-        print("[**ERROR**] : in path", path)
+        # print(output, "\n")
+        # print("[**ERROR**] : in path", path)
     return rmse
     # pass
 
@@ -99,16 +99,16 @@ def ParseResults_SubSubfolder(subfolder,subfolder_list, subfolder_path,dataset_g
     if 'SCALE' in globals():
         TERMINAL_COMMAND = TERMINAL_COMMAND + SCALE    
         PLOT_FOLDER_NAME = PLOT_FOLDER_NAME + "_" + 'ALIGN_SCALE_'  
-        print("\t\t", "-ALIGN -SCALE") 
+        # print("\t\t", "-ALIGN -SCALE") 
         RESULTS_FILE_NAME = (STEREO_FOLDER_NAME+'_' +subfolder + '_'+'ALIGN_SCALE_'+  SAVE_RESULTS_FILE)
         # if any(s.find(RESULTS_FILE_NAME) != -1 for s in subfolder_list):
 
         if RESULTS_FILE_NAME.strip() not in subfolder_list:
             New_Added_Zip_Files.append(RESULTS_FILE_NAME.strip())
-            print("\t\t-Result file will be created.")
+            # print("\t\t-Result file will be created.")
             TERMINAL_COMMAND = TERMINAL_COMMAND + SAVE_RESULTS_CMD + os.path.join(subfolder_path,RESULTS_FILE_NAME)
-        else:
-            print("\t\t","**-Result file ALREADY EXISTS!.")
+        # else:
+            # print("\t\t","**-Result file ALREADY EXISTS!.")
     elif 'ALIGN' in globals():
         TERMINAL_COMMAND = TERMINAL_COMMAND + ALIGN 
         PLOT_FOLDER_NAME = PLOT_FOLDER_NAME + "_" + 'ALIGN_'
@@ -118,10 +118,10 @@ def ParseResults_SubSubfolder(subfolder,subfolder_list, subfolder_path,dataset_g
         # if any(s.find(RESULTS_FILE_NAME) != -1 for s in subfolder_list):
         if RESULTS_FILE_NAME.strip() not in subfolder_list:
             New_Added_Zip_Files.append(RESULTS_FILE_NAME.strip())
-            print("\t\t", "-Result file will be created.")
+            # print("\t\t", "-Result file will be created.")
             TERMINAL_COMMAND = TERMINAL_COMMAND + SAVE_RESULTS_CMD + os.path.join(subfolder_path,RESULTS_FILE_NAME)
-        else:
-            print("\t\t","**-Result file ALREADY EXISTS!.")
+        # else:
+            # print("\t\t","**-Result file ALREADY EXISTS!.")
 
     # # adding plots
     # PLOT_FILE_NAME = STEREO_FOLDER_NAME + subfolder + SAVE_PLOT_FILE
@@ -131,14 +131,14 @@ def ParseResults_SubSubfolder(subfolder,subfolder_list, subfolder_path,dataset_g
     # print(RESULTS_FILE_NAME)
     # print("\t\t", TERMINAL_COMMAND)
     # print(os.getcwd())
-    print("*******CMD",TERMINAL_COMMAND)
-    print("*******PATH",subfolder_path)
+    # print("*******CMD",TERMINAL_COMMAND)
+    # print("*******PATH",subfolder_path)
     if external_server_evaluation !=None:
         return TERMINAL_COMMAND
     result = RunTerminalCommand(subfolder_path, TERMINAL_COMMAND)
     # print("zew")
     rmse_data = FilterOutputToExtractRMSEData(result.stdout,path = subfolder_path)
-    print("RMSE:",rmse_data)
+    # print("RMSE:",rmse_data)
     if rmse_data != -1:
 
         # FIX ME
@@ -160,7 +160,7 @@ def ParseResults():
     # timestamped_folders = [f.pop() for f in timestamped_folders if f[0].isdigit() == False]
     timestamped_folders = [f for f in os.listdir(ROOT_DIR) if os.path.isdir(os.path.join(ROOT_DIR, f)) and f[0].isdigit()]
 
-    print(timestamped_folders)
+    # print(timestamped_folders)
     # create an empty dataframe to store the results
     # df = pd.DataFrame(columns=['Timestamped Folder Name', '1', '2', '3'])
 
@@ -179,14 +179,14 @@ def ParseResults():
         # for subfolder in ["1", "2", "3"]:
         for subfolder in stereo_subfolders:
             subfolder_path = os.path.join(stereo_folder, subfolder)
-            print(timestamped_folder,"\n\t", subfolder)
+            # print(timestamped_folder,"\n\t", subfolder)
             subfolder_list = os.listdir(subfolder_path)
             dataset_ground_truth_folder = timestamped_folder
             # print(subfolder_list)
             # run the terminal command in the subfolder and filter the output to extract the RMSE data
             # result = subprocess.run(TERMINAL_COMMAND, shell=True, cwd=subfolder_path, capture_output=True, text=True)
             ParseResults_SubSubfolder(subfolder,subfolder_list, subfolder_path,dataset_ground_truth_folder)
-    print("Added *.zip Results files are: ", New_Added_Zip_Files)
+    # print("Added *.zip Results files are: ", New_Added_Zip_Files)
 
     # save the results to a CSV file
     df.to_csv(OUTPUT_FILENAME, index=False)

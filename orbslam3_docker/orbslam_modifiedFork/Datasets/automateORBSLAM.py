@@ -39,16 +39,19 @@ def list_bag_files(directory , filter_bag_files_strings = None):
 def Run_ORBSlam_and_Dataset(rosbagName, testResultDirectory=None):
     # Start a command
     # this needs to be run from inside the docker container that has orbslam
-
+    FNULL = open(os.devnull, 'w')
     orbslam_process = subprocess.Popen(["rosrun", "ORB_SLAM3" ,"Stereo", "/ORB_SLAM3/Vocabulary/ORBvoc.txt" ,"/ORB_SLAM3/Examples/Stereo/EuRoC.yaml", "false"],
                                         cwd= testResultDirectory,
-                                        stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+                                        stdout=FNULL, stderr=subprocess.STDOUT)
+                                        # stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
     time.sleep(15)
     # rosbagName = "carlaDatasets/" + rosbagName
     startDataset_process = subprocess.Popen(["/Datasets/sendDatasetDoneFlag.sh", rosbagName],
-                                        stdout=subprocess.DEVNULL,
-                                        stderr=subprocess.DEVNULL)
+                                        stdout=FNULL,
+                                        stderr=subprocess.STDOUT)
+                                        # stdout=subprocess.DEVNULL,
+                                        # stderr=subprocess.DEVNULL)
 
     # Wait for a certain amount of time
     time.sleep(90)

@@ -162,24 +162,28 @@ time.sleep(1)
 # END OF ROS CLASSES
 
 class Chromosome :
-    def __init__(self , length, function):
+    def __init__(self , length, function, init_population=None):
         self.genes = ""
+        self.gene1 = ""
+        self.gene2 = ""
+        self.gene3 = ""
         self.function = function
         self.param1_decimal=0
         self.param2_decimal=0
         self.param3_decimal=0
         self.param4_decimal=0
         self.fitness=0
-        # for i in range(length):
-        #     self.genes += str(random.randint(0, 1)) 
-        self.gene1 = self.generate_genes(GENE1_LENGTH_BINARY) 
-        self.gene2 = self.generate_genes(GENE2_LENGTH_BINARY)
-        self.gene3 = self.generate_genes(GENE3_LENGTH_BINARY)
+        if init_population == None:
+            # for i in range(length):
+            #     self.genes += str(random.randint(0, 1)) 
+            self.gene1 = self.generate_genes(GENE1_LENGTH_BINARY) 
+            self.gene2 = self.generate_genes(GENE2_LENGTH_BINARY)
+            self.gene3 = self.generate_genes(GENE3_LENGTH_BINARY)
 
-        # self.genes = self.generate_genes(GENE1_LENGTH_BINARY) + self.generate_genes(GENE2_LENGTH_BINARY) + self.generate_genes(GENE3_LENGTH_BINARY)
-        self.combine_chromosome_from_gene()
-        # print(self.genes)
-        self.calculateTheFitness()    
+            # self.genes = self.generate_genes(GENE1_LENGTH_BINARY) + self.generate_genes(GENE2_LENGTH_BINARY) + self.generate_genes(GENE3_LENGTH_BINARY)
+            self.combine_chromosome_from_gene()
+            # print(self.genes)
+            self.calculateTheFitness()
     
     def generate_genes(self, length):
         genes = ""
@@ -189,6 +193,15 @@ class Chromosome :
 
     def combine_chromosome_from_gene(self):
         self.genes = self.gene1 + self.gene2 + self.gene3
+
+    def update_genes_from_chromosome(self):
+        # Assuming you have defined GENE1_LENGTH_BINARY, GENE2_LENGTH_BINARY, and GENE3_LENGTH_BINARY
+        # at the beginning of your code or within the class
+
+        # Split the chromosome into separate genes based on their lengths
+        self.gene1 = self.genes[:GENE1_LENGTH_BINARY]
+        self.gene2 = self.genes[GENE1_LENGTH_BINARY:GENE1_LENGTH_BINARY + GENE2_LENGTH_BINARY]
+        self.gene3 = self.genes[GENE1_LENGTH_BINARY + GENE2_LENGTH_BINARY:]
 
     def calculateTheFitness(self,chromosome_in_population=False,is_fittest=""):
         global results
@@ -269,7 +282,7 @@ class GeneticAlgorithm :
         temp[:self.elitismSize] = population.getNFittestChromosomes(self.elitismSize)
         print("Starting Gen ", Current_Generation)
         for i in range(self.elitismSize):
-            print("\t ", i  ," ",temp[i].genes,"  rmse: ", temp[i].fitness , "Fittest" if i == 0 else "Elite")
+            print("     ", i  ," ",temp[i].genes,"  rmse: ", temp[i].fitness , "Fittest" if i == 0 else "Elite")
             results = results.append({
                 'Generation': Current_Generation,
                 'Solution': "\""+  temp[i].genes + "\"",
@@ -300,18 +313,18 @@ class GeneticAlgorithm :
             #         break
             # if found:
             #     print("**!!!!**DUPLICATE CHROMOSOME IN GEN ", Current_Generation,
-            #         "\n\t\t Index inside this gen (pop): ",i ,
-            #         "\n\t\t Chromosome is ", child.genes
+            #         "\n         Index inside this gen (pop): ",i ,
+            #         "\n         Chromosome is ", child.genes
             #         )
             #     continue
             child1.calculateTheFitness(chromosome_in_population=True)
             child2.calculateTheFitness(chromosome_in_population=True)
             temp.append(child1)
-            temp.append(child2)
-            print("\t ", i  ," ",temp[i].genes,"  rmse: ", temp[i].fitness, "Population")
+            # temp.append(child2)
+            print("     ", i  ," ",temp[i].genes,"  rmse: ", temp[i].fitness, "Population")
             i += 1
             temp.append(child2)
-            print("\t ", i  ," ",temp[i].genes,"  rmse: ", temp[i].fitness, "Population")
+            print("     ", i  ," ",temp[i].genes,"  rmse: ", temp[i].fitness, "Population")
             i += 1
         # for i in range(self.elitismSize , self.populationSize):
         #     if SELECTION_METHOD == 'tournament':
@@ -380,8 +393,10 @@ class GeneticAlgorithm :
             index = random.randint(0, len(population.chromosomes) -1)
             # tournamentPool.append(population.chromosomes[index])
             chromosome = population.chromosomes[index]
-            if chromosome.genes != exclude.genes:
-                tournamentPool.append(chromosome)
+            if exclude != None:
+                if exclude.genes == chromosome.genes:
+                    continue
+            tournamentPool.append(chromosome)
         tournamentPool.sort(key = lambda x:x.fitness)
         return tournamentPool[0]
 
@@ -395,7 +410,7 @@ class GeneticAlgorithm :
                 return chromosome
     
     def onePointCrossOver(self , parent1 , parent2):
-        child = Chromosome(self.chromosomeSize, self.function)
+        child = Chromosome(self.chromosomeSize, self.function, init_population=True)
         if random.random() < CROSSOVER_RATE:
             # child = self.onePointCrossOver(parent1, parent2)
             temp = []
@@ -443,10 +458,12 @@ class GeneticAlgorithm :
             child1_genes = parent1.genes
             child2_genes = parent2.genes
         # Create child chromosomes
-        child1 = Chromosome(self.chromosomeSize, self.function)
-        child2 = Chromosome(self.chromosomeSize, self.function)
+        child1 = Chromosome(self.chromosomeSize, self.function, init_population=True)
+        child2 = Chromosome(self.chromosomeSize, self.function, init_population=True)
         child1.genes = ''.join(child1_genes)
+        child1.update_genes_from_chromosome()
         child2.genes = ''.join(child2_genes)
+        child2.update_genes_from_chromosome()
         # child1.calculateTheFitness()
         # child2.calculateTheFitness()
         return child1, child2
@@ -562,10 +579,10 @@ if __name__ == "__main__":
         best_param1, best_param2 = population.fittest.param1_decimal , population.fittest.param2_decimal
 
         # print >>f, "# Generation: ", i 
-        # print >>f, "\t solution: ", population.fittest.genes
-        # print >>f, "\t fitness: ", population.fittest.fitness
+        # print >>f, "     solution: ", population.fittest.genes
+        # print >>f, "     fitness: ", population.fittest.fitness
         # with open(os.path.join(pathToSaveTestResults_testParameter,'output_zew.txt'), 'a') as fff:
-        #     print >>fff, "\t parameters: ", best_param1, best_param2
+        #     print >>fff, "     parameters: ", best_param1, best_param2
 
         # results = results.append({
         # 'Generation': i,
@@ -574,9 +591,9 @@ if __name__ == "__main__":
         # 'Parameters': (best_param1, best_param2)
         # }, ignore_index=True)
         print("### Gen", Current_Generation,
-            "\n\tBest solution: ", population.fittest.genes, 
-            "\n\tBest fitness: ", population.fittest.fitness,
-            "\n\tBest parameters: ",population.fittest.param1_decimal , population.fittest.param2_decimal ,population.fittest.param3_decimal, population.fittest.param4_decimal )
+            "\n    Best solution: ", population.fittest.genes, 
+            "\n    Best fitness: ", population.fittest.fitness,
+            "\n    Best parameters: ",population.fittest.param1_decimal , population.fittest.param2_decimal ,population.fittest.param3_decimal, population.fittest.param4_decimal )
         generation_list.append(i)
         solution_list.append("\""+ population.fittest.genes + "\"")
         fitness_list.append(population.fittest.fitness)
