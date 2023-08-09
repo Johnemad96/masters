@@ -113,7 +113,8 @@ root_dir = parameters['root_dir']
 test_results_path = parameters['test_results_path']
 test_parameter = parameters['test_parameter']
 
-bag_files, filtered_files = list_bag_files(dataset_dir, ["20230331_1", "normal"])
+# bag_files, filtered_files = list_bag_files(dataset_dir, ["20230331_1", "normal"])
+bag_files, filtered_files = list_bag_files(dataset_dir, ["20230401_6", "rain&fog"])
 pathToSaveTestResults_testParameter = create_incremented_folder(test_results_path, folder_name_suffix=test_parameter)
 
 # ROS GLOBAL VARIABLES
