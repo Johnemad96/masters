@@ -1,3 +1,6 @@
 [submodule "EnvSetup/carla/carlasim-Docker"]
 	path = EnvSetup/carla/carlasim-Docker
 	url = https://github.com/johnemad96/carlasim-Docker
+[submodule "orbslam3_docker/orbslam_modifiedFork/docs"]
+	path = orbslam3_docker/orbslam_modifiedFork/docs
+	url = https://github.com/Johnemad96/docs
