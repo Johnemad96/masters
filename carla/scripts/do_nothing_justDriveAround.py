@@ -224,7 +224,7 @@ for w in waypoints:  # spawn_points:
 # loop
 # spawn_point = waypoints[2795].transform
 # spawn_point = waypoints[1621].transform
-savePath(filenameStr,designedPath)
+# savePath(filenameStr,designedPath)
 spawn_point = waypoints[designedPath.pop(0)].transform
 # spawn_point = waypoints[1179].transform
 # spawn_point = waypoints[1383].transform
@@ -342,7 +342,7 @@ fontColor = (255, 125, 125)
 thickness = 1
 lineType = int(2)
 world.tick()
-ba = BasicAgent(vehicle, target_speed=40)
+ba = BasicAgent(vehicle, target_speed=100)
 # ba.set_destination(waypoints[1496].transform.location)
 temp_location = vehicle.get_transform().location
 prev_location = vehicle.get_transform().location
@@ -356,7 +356,8 @@ time.sleep((3))
 # path = [waypoints[1560],waypoints[2410], waypoints[1179], waypoints[2671]]
 # path = [waypoints[1982],waypoints[1196],waypoints[2203],waypoints[2425],waypoints[1403],waypoints[2805],waypoints[1621]]
 path = []
-[path.append(waypoints[designedPath.pop(0)]) for i in range(len(designedPath))]
+# [path.append(waypoints[designedPath.pop(0)]) for i in range(len(designedPath))]
+[path.append(waypoints[designedPath.pop(0)])]
 print(path)
 # path = [waypoints[2783]]
 # path = [waypoints[684],waypoints[2418],waypoints[2671]]

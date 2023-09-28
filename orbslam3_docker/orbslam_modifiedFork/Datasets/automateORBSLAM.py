@@ -61,20 +61,55 @@ def Run_ORBSlam_and_Dataset(rosbagName, testResultDirectory=None):
     #     process.terminate()
 
     # If the process is still running after this time, send a SIGINT signal
+#    if orbslam_process.poll() is None:
+#        startDataset_process.send_signal(signal.SIGINT)
+#        orbslam_process.send_signal(signal.SIGINT)
+#        # startDataset_process.terminate()
+#        # startDataset_process.wait()
+#        # orbslam_process.terminate()
+#        # startDataset_process.wait()
+#        time.sleep(6)
+#        orbslam_process.send_signal(signal.SIGINT)
+#        # time.sleep(3)
+#        # orbslam_process.send_signal(signal.SIGINT)
+#        # startDataset_process.send_signal(signal.SIGINT)
+#    time.sleep(3)
+#    orbslam_process.send_signal(signal.SIGINT)
+
+# Initialize the counter for checking
+    check_count = 0
+    max_checks = 3  # Maximum number of checks
+
+    while check_count < max_checks:
+        if orbslam_process.poll() is None:  # Check if the process is still running
+            print("Attempt %d: ORBSLAM process is still running. Sending SIGINT.", check_count + 1)
+
+            # Send SIGINT signals to both processes
+            if check_count==0:
+                startDataset_process.send_signal(signal.SIGINT)
+                time.sleep(1)
+            orbslam_process.send_signal(signal.SIGINT)
+
+            # Wait for 6 seconds
+            time.sleep(8)
+
+            # Send another SIGINT to orbslam_process
+            #orbslam_process.send_signal(signal.SIGINT)
+
+            # Increment the check counter
+            check_count += 1
+        else:
+            print("ORBSLAM process has exited properly.")
+            break  # Exit the loop if the process has terminated
+
+    # If the loop completes and the process is still running, you can take further action
     if orbslam_process.poll() is None:
-        startDataset_process.send_signal(signal.SIGINT)
-        orbslam_process.send_signal(signal.SIGINT)
-        # startDataset_process.terminate()
-        # startDataset_process.wait()
-        # orbslam_process.terminate()
-        # startDataset_process.wait()
-        time.sleep(6)
-        orbslam_process.send_signal(signal.SIGINT)
-        # startDataset_process.send_signal(signal.SIGINT)
-
-
+        print("ORBSLAM process did not exit properly after maximum checks. Taking further action.")
+        # You can add more code here to handle this situation, such as forcefully terminating the process
+        # Forcefully terminate the ORBSLAM process and its child processes
+        os.system("kill -9 {}".format(orbslam_process.pid))
     # Wait for a certain amount of time
-    time.sleep(5)
+    #time.sleep(5)
 
     # # If the process is still running after this time, send a SIGTERM signal
     # if orbslam_process.poll() is None:

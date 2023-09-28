@@ -5,7 +5,7 @@ pwd
 # parameterToTest="baseline"
 # parameterToTest="ORBextractor_nFeatures"
 parameterToTest="baseline_ORBextractor_nFeatures"
-subdirectory="testParametersEffect/stereo/${parameterToTest}/08"
+subdirectory="testParametersEffect/stereo/${parameterToTest}/01"
 test_index=$(basename "$subdirectory")
 
 # target_dir="${root_dir}${subdirectory}"

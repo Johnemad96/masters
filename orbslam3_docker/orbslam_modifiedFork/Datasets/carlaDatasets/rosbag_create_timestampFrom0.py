@@ -25,7 +25,7 @@ import time
 def createARosBag(filenameToSave):
     # datasetDirectory = datasetBaseDirectory
     datasetDirectory = filenameToSave + '/'
-    rosbagName = '41_PaperDataset_Town10_'+ filenameToSave +'_rain&fog_night'+'_euroc'
+    rosbagName = '43_PaperDataset_Town10_'+ filenameToSave +'_rain&fog_50'+'_euroc'
     def ImageToDictionary(imageList):
         # image=[]
         image = {'images':[], 'timestamp':[], 'frameID':[]}

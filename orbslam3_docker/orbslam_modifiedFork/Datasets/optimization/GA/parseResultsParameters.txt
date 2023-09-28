@@ -4,4 +4,14 @@ dataset_ground_truth_folder: GA
 STEREO_FOLDER_NAME: stereo
 test_parameter: baseline_ORBextractor_nFeatures
 # GROUND_TRUTH_FILE_NAME: Daytime_Normal_GroundTruth_Transformed_clean.tum
-GROUND_TRUTH_FILE_NAME: Daytime_rain&fog_GroundTruth_Transformed_clean.tum
+# GROUND_TRUTH_FILE_NAME: Daytime_rain&fog_GroundTruth_Transformed_clean.tum
+# GROUND_TRUTH_FILE_NAME: Nighttime_rain&fog_GroundTruth_Transformed_clean.tum
+# GROUND_TRUTH_FILE_NAME: Nighttime_normal_GroundTruth_Transformed_clean.tum
+# GROUND_TRUTH_FILE_NAME: Daytime_rain_GroundTruth_Transformed_clean.tum
+# GROUND_TRUTH_FILE_NAME: Nighttime_rain_GroundTruth_Transformed_clean.tum
+# GROUND_TRUTH_FILE_NAME: Daytime_fog_GroundTruth_Transformed_clean.tum
+# GROUND_TRUTH_FILE_NAME: Nighttime_fog_GroundTruth_Transformed_clean.tum
+# GROUND_TRUTH_FILE_NAME: Daytime_fog_50_GroundTruth_Transformed_clean.tum
+# GROUND_TRUTH_FILE_NAME: Nighttime_fog_50_GroundTruth_Transformed_clean.tum
+GROUND_TRUTH_FILE_NAME: Nighttime_rain&fog_50_GroundTruth_Transformed_clean.tum
+# GROUND_TRUTH_FILE_NAME: Daytime_rain&fog_50_GroundTruth_Transformed_clean.tum

@@ -23,7 +23,7 @@ SAVE_RESULTS_CMD = "--save_results "
 SAVE_PLOT_FILE = "plot.png "
 PLOT_FOLDER_NAME = "Plots"
 PLOT_FILE_NAME = ""
-RESULTS_FILE_NAME = ""
+RESULTS_FILE_NAME = "results.zip "
 SAVE_RESULTS_FILE = "results.zip "
 
 RESULT_CSV_PREFIX = None

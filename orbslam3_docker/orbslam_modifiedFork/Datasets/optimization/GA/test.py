@@ -64,51 +64,51 @@ if __name__ == "__main__":
     parameters = Read_Required_Params('optimizationParameters.txt')
     dataset_dir = parameters['dataset_dir']
     root_dir = parameters['root_dir']
-    test_results_path = parameters['test_results_path']
-    test_parameter = parameters['test_parameter']
+    test_results_path = '/Datasets/carlaDatasets/_paperResults/' #parameters['test_results_path']
+    test_parameter = 'RainFogNighttime_defaultparameter' #parameters['test_parameter']
 
-    bag_files, filtered_files = list_bag_files(dataset_dir, ["20230331_1", "normal"])
+    bag_files, filtered_files = list_bag_files(dataset_dir, ["20230401_7", "rain&fog_night"])
     pathToSaveTestResults_testParameter = create_incremented_folder(test_results_path, folder_name_suffix=test_parameter)
-
-    new_ThDepth = 95.0
-    new_ORBextractor_nFeatures = 600
-
-    new_ThDepth = new_ThDepth*1.0
-    Change_Yaml_Parameters(new_ThDepth=new_ThDepth, new_ORBextractor_nFeatures = new_ORBextractor_nFeatures)
-    # pathToSaveTestResults = os.path.join(pathToSaveTestResults_testParameter,((str(int(new_ThDepth)).zfill(4)) +"_"+ (str(new_ORBextractor_nFeatures).zfill(4))).replace('.', '_'))
-
-    pathToSaveTestResults = create_incremented_folder(pathToSaveTestResults_testParameter, folder_name_suffix=((str(int(new_ThDepth)).zfill(4)) +"_"+ (str(new_ORBextractor_nFeatures).zfill(4))).replace('.', '_'))
-
-    # os.makedirs(pathToSaveTestResults, exist_ok=True)
-    print("running orb slam")
-    Run_ORBSlam_and_Dataset(filtered_files[0], pathToSaveTestResults)
-    # time.sleep(3)
-
-    # full_path, relative_path = find_files(parameters['ROOT_DIR'], "FrameTrajectory_TUM_Format.txt", parameters['STEREO_FOLDER_NAME'],parameters['test_parameter'])
-    evaluationParameters =Update_Global_Variables("parseResultsParameters.txt")
-    _ , resultInstance_Index = os.path.split(pathToSaveTestResults_testParameter)
-    subfolder_path, subfolder = os.path.split(pathToSaveTestResults)
-    subfolder_path = (os.path.join(subfolder_path, subfolder))
-    print(resultInstance_Index,"\n", subfolder,"\n" ,subfolder_path,"\n", os.getcwd())
-    if "FrameTrajectory_TUM_Format.txt" in sorted(os.listdir(pathToSaveTestResults)):
-        eval_command = ParseResults_SubSubfolder(subfolder, sorted(os.listdir(subfolder_path)),
-                                subfolder_path, 
-                                dataset_ground_truth_folder=evaluationParameters['dataset_ground_truth_folder'], 
-                                Stereo_Folder_Name=resultInstance_Index, 
-                                external_server_evaluation=True)
-        # print(eval_command)
-    # eval_command = "evo_ape tum /Datasets/optimization/GA/Daytime_Normal_GroundTruth_Transformed_clean.tum /Datasets/optimization/GA/GAtests/22_2params_baseline_ORBextractor_nFeatures/01_0095_0600/FrameTrajectory_TUM_Format.txt --align --save_results /Datasets/optimization/GA/GAtests/22_2params_baseline_ORBextractor_nFeatures/01_0095_0600/22_2params_baseline_ORBextractor_nFeatures_01_0095_0600_ALIGN_results.zip"
-    # rospy.wait_for_service('evaluate_SLAM_Evo')
-    # try:
-    #     evaluate_SLAM_Evo = rospy.ServiceProxy('evaluate_SLAM_Evo', evaluateSLAMEvo)
-    #     resp1 = evaluate_SLAM_Evo(eval_command)
-    # except rospy.ServiceException as e:
-    #     print("Service call failed: %s"%e)    
     rospy.init_node('GA_Node')
     sender = Sender(rospy)
     time.sleep(1)
     receiver = Receiver(rospy)
     time.sleep(1)
-    sender.send(eval_command)
-    receiver.spin()
-    print(received_rmse)
+    for i in range(3):
+        new_ThDepth = 35.0
+        new_ORBextractor_nFeatures = 1200
+
+        new_ThDepth = new_ThDepth*1.0
+        # Change_Yaml_Parameters(new_ThDepth=new_ThDepth, new_ORBextractor_nFeatures = new_ORBextractor_nFeatures)
+        pathToSaveTestResults = os.path.join(pathToSaveTestResults_testParameter,((str(int(new_ThDepth)).zfill(4)) +"_"+ (str(new_ORBextractor_nFeatures).zfill(4))).replace('.', '_'))
+
+        pathToSaveTestResults = create_incremented_folder(pathToSaveTestResults_testParameter, folder_name_suffix=((str(int(new_ThDepth)).zfill(4)) +"_"+ (str(new_ORBextractor_nFeatures).zfill(4))).replace('.', '_'))
+
+        # os.makedirs(pathToSaveTestResults, exist_ok=True)
+        print("running orb slam")
+        Run_ORBSlam_and_Dataset(filtered_files[0], pathToSaveTestResults)
+        # time.sleep(3)
+
+        # full_path, relative_path = find_files(parameters['ROOT_DIR'], "FrameTrajectory_TUM_Format.txt", parameters['STEREO_FOLDER_NAME'],parameters['test_parameter'])
+        evaluationParameters =Update_Global_Variables("parseResultsParameters.txt")
+        _ , resultInstance_Index = os.path.split(pathToSaveTestResults_testParameter)
+        subfolder_path, subfolder = os.path.split(pathToSaveTestResults)
+        subfolder_path = (os.path.join(subfolder_path, subfolder))
+        print(resultInstance_Index,"\n", subfolder,"\n" ,subfolder_path,"\n", os.getcwd())
+        if "FrameTrajectory_TUM_Format.txt" in sorted(os.listdir(pathToSaveTestResults)):
+            eval_command = ParseResults_SubSubfolder(subfolder, sorted(os.listdir(subfolder_path)),
+                                    subfolder_path, 
+                                    dataset_ground_truth_folder=evaluationParameters['dataset_ground_truth_folder'], 
+                                    Stereo_Folder_Name=resultInstance_Index, 
+                                    external_server_evaluation=True)
+            print(eval_command)
+        # eval_command = "evo_ape tum /Datasets/optimization/GA/Daytime_Normal_GroundTruth_Transformed_clean.tum /Datasets/optimization/GA/GAtests/22_2params_baseline_ORBextractor_nFeatures/01_0095_0600/FrameTrajectory_TUM_Format.txt --align --save_results /Datasets/optimization/GA/GAtests/22_2params_baseline_ORBextractor_nFeatures/01_0095_0600/22_2params_baseline_ORBextractor_nFeatures_01_0095_0600_ALIGN_results.zip"
+        # rospy.wait_for_service('evaluate_SLAM_Evo')
+        # try:
+        #     evaluate_SLAM_Evo = rospy.ServiceProxy('evaluate_SLAM_Evo', evaluateSLAMEvo)
+        #     resp1 = evaluate_SLAM_Evo(eval_command)
+        # except rospy.ServiceException as e:
+        #     print("Service call failed: %s"%e)    
+        sender.send(eval_command)
+        receiver.spin()
+        print(received_rmse)

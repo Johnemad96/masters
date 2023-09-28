@@ -14,6 +14,7 @@ pangolin/
 !**.md
 !**.sh
 !**.py
+!**.ipynb
 !**.txt
 !*/Dockerfile
 !**.csv
@@ -26,3 +27,4 @@ pangolin/
 # # But ignore .zip files in the specific directory
 # /orbslam3_docker/orbslam_modifiedFork/Datasets/carlaDatasets/justForPlotingZIPResults/**/*.zip
 
+orbslam3_docker/orbslam_modifiedFork/Datasets/optimization/GA/GAtests/**/*.txt

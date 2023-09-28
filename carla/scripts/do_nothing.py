@@ -20,7 +20,7 @@ def readPath():
     path = []
     with open('dataset/path.txt', 'r') as f:
         for line in f:
-            if line.startswith('Path:')or line.startswith('\\') :
+            if line.startswith('Path:')or line.startswith('\\') or line.startswith('#') :
                 continue
             path.append(int(line.strip(',\n')))
     return path
