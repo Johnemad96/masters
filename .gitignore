@@ -27,4 +27,6 @@ pangolin/
 # # But ignore .zip files in the specific directory
 # /orbslam3_docker/orbslam_modifiedFork/Datasets/carlaDatasets/justForPlotingZIPResults/**/*.zip
 
-orbslam3_docker/orbslam_modifiedFork/Datasets/optimization/GA/GAtests/**/*.txt
+orbslam3_docker/orbslam_modifiedFork/Datasets/optimization/GA/**/*.txt
+orbslam3_docker/orbslam_modifiedFork/Datasets/carlaDatasets/_paperResults/**/*.txt
+orbslam3_docker/orbslam_modifiedFork/Datasets/optimization/kitti_test/**/*.txt

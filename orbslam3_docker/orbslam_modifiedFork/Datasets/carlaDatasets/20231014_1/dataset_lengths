@@ -1,0 +1,37 @@
+/home/john/masters/orbslam3_docker/orbslam_modifiedFork/Datasets/carlaDatasets/20231015_1 --------------------------------------------------------------------------------
+name:	GroundTruth_Transformed_clean
+infos:	18857 poses, 1951.035m path length, 188.560s duration
+--------------------------------------------------------------------------------
+Trajectory saved to: GroundTruth_Transformed_clean.tum
+
+/home/john/masters/orbslam3_docker/orbslam_modifiedFork/Datasets/carlaDatasets/20231020_1 --------------------------------------------------------------------------------
+name:	GroundTruth_Transformed_clean
+infos:	1916 poses, 171.303m path length, 19.150s duration
+--------------------------------------------------------------------------------
+Trajectory saved to: GroundTruth_Transformed_clean.tum
+
+/home/john/masters/orbslam3_docker/orbslam_modifiedFork/Datasets/carlaDatasets/20231015_3 --------------------------------------------------------------------------------
+name:	GroundTruth_Transformed_clean
+infos:	10313 poses, 1046.745m path length, 103.120s duration
+--------------------------------------------------------------------------------
+Trajectory saved to: GroundTruth_Transformed_clean.tum
+
+/home/john/masters/orbslam3_docker/orbslam_modifiedFork/Datasets/carlaDatasets/20231015_4 --------------------------------------------------------------------------------
+name:	GroundTruth_Transformed_clean
+infos:	10177 poses, 1046.717m path length, 101.760s duration
+--------------------------------------------------------------------------------
+Trajectory saved to: GroundTruth_Transformed_clean.tum
+
+/home/john/masters/orbslam3_docker/orbslam_modifiedFork/Datasets/carlaDatasets/20231020_2 --------------------------------------------------------------------------------
+name:	GroundTruth_Transformed_clean
+infos:	2007 poses, 171.197m path length, 20.060s duration
+--------------------------------------------------------------------------------
+Trajectory saved to: GroundTruth_Transformed_clean.tum
+
+/home/john/masters/orbslam3_docker/orbslam_modifiedFork/Datasets/carlaDatasets/20231014_1 --------------------------------------------------------------------------------
+name:	GroundTruth_Transformed_clean
+infos:	19117 poses, 1950.270m path length, 191.160s duration
+--------------------------------------------------------------------------------
+Trajectory saved to: GroundTruth_Transformed_clean.tum
+
+

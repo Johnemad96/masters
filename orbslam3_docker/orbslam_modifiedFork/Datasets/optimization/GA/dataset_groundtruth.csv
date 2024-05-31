@@ -1,0 +1,7 @@
+Time of Day,weather condition,,,
+daytime,Normal,Dataset 1,20231014_1,GroundTruth_Transformed_clean_20231014_1_long_normal.tum
+Nightime,Rain & fog 50,Dataset 1,20231015_1,GroundTruth_Transformed_clean_20231015_1_long_night_rainfog50.tum
+daytime,Normal,Dataset 2,20231015_3,GroundTruth_Transformed_clean_20231015_3_long_normal_open_end.tum
+Nightime,Rain & fog 50,Dataset 2,20231015_4,GroundTruth_Transformed_clean_20231015_4_long_night_rainfog_50_open_end.tum
+daytime,Normal,Dataset 3,20231020_1,GroundTruth_Transformed_clean_20231020_1_long_line.tum
+Nightime,Rain & fog 50,Dataset 3,20231020_2,GroundTruth_Transformed_clean_20231020_2_line_night_rainfog_50.tum
