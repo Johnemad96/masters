@@ -38,7 +38,7 @@ class Receiver:
     def callback(self, msg):
         global received_cmd, last_received_cmd
         rospy.loginfo('Received: %s', msg.data)
-        if msg.data.startswith("evo_ape"):
+        if msg.data.startswith("evo_ape") or msg.data.startswith("evo_rpe"):    
             self.received_expected_data = True
             received_cmd = msg.data
             if received_cmd != "" and received_cmd != last_received_cmd:

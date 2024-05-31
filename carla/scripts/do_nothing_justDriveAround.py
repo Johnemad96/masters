@@ -357,8 +357,9 @@ time.sleep((3))
 # path = [waypoints[1982],waypoints[1196],waypoints[2203],waypoints[2425],waypoints[1403],waypoints[2805],waypoints[1621]]
 path = []
 # [path.append(waypoints[designedPath.pop(0)]) for i in range(len(designedPath))]
-[path.append(waypoints[designedPath.pop(0)])]
-print(path)
+# [path.append(waypoints[designedPath.pop(0)])]
+# print(path)
+path = [waypoints[designedPath[i]] for i in range(len(designedPath))]
 # path = [waypoints[2783]]
 # path = [waypoints[684],waypoints[2418],waypoints[2671]]
 # path = [waypoints[1653]]
@@ -439,11 +440,11 @@ for p in path:
         spectator.set_transform(transform)
         # time.sleep(0.1)
         temp_location = vehicle.get_transform().location
-        # # plt.plot(vehicle.get_transform().location.x,vehicle.get_transform().location.y,c = 'r',marker = 'p')
-        # if np.abs(np.sqrt(temp_location.x**2 + temp_location.y**2) - np.sqrt(prev_location.x**2 + prev_location.y**2)) > 2:
-        #     plt.plot(vehicle.get_transform().location.x,vehicle.get_transform().location.y,c = 'r',marker = 'p')
-        #     plt.pause(0.00000000000000001)
-        #     prev_location = temp_location
+        # plt.plot(vehicle.get_transform().location.x,vehicle.get_transform().location.y,c = 'r',marker = 'p')
+        if np.abs(np.sqrt(temp_location.x**2 + temp_location.y**2) - np.sqrt(prev_location.x**2 + prev_location.y**2)) > 2:
+            plt.plot(vehicle.get_transform().location.x,vehicle.get_transform().location.y,c = 'r',marker = 'p')
+            plt.pause(0.00000000000000001)
+            prev_location = temp_location
         imu_data_list['frame'].append(imu_data['frame'])
         imu_data_list['timestamp'].append(imu_data['timestamp'])
         imu_data_list['accel'].append(imu_data['accel'])

@@ -79,13 +79,19 @@ def RunTerminalCommand(DIR,CMD):
     # print(DIR,result)
     return result
 
-def ParseResults_SubSubfolder(subfolder,subfolder_list, subfolder_path,dataset_ground_truth_folder = None, Ground_Truth_File_Name=None,Stereo_Folder_Name=None,external_server_evaluation=None):
+def ParseResults_SubSubfolder(subfolder,subfolder_list,
+                                subfolder_path,dataset_ground_truth_folder = None, 
+                                Ground_Truth_File_Name=None,Stereo_Folder_Name=None,
+                                external_server_evaluation=None,
+                                RPE_not_APE=None):
     # subfolder:                    subfolder name under stereo(/1/, /2/, /3/)
     # subfolder_path:               path from ROOT till the subfolder (under stereo: /1/, /2/, /3/)
     # subfolder_list:               list of files (and possibly folders) under the subfolder path which is the trajectory txt files
     # dataset_ground_truth_folder:  renamed from timestamped_folder, the folder inside "carlaDatasets/" which contains the groundtruth file,
     #                               stereo/stereo_inertial folder
     global PLOT_FOLDER_NAME,BASE_TERMINAL_COMMAND,RESULT_CSV_PREFIX,GROUND_TRUTH_FILE_NAME
+    if RPE_not_APE!=None:
+        BASE_TERMINAL_COMMAND = "evo_rpe tum "
     if Ground_Truth_File_Name != None:
         GROUND_TRUTH_FILE_NAME = Ground_Truth_File_Name
     if Stereo_Folder_Name != None:

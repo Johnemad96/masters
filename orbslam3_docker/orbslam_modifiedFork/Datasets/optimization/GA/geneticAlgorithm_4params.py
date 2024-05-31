@@ -121,9 +121,9 @@ test_parameter = parameters['test_parameter']
 # bag_files, filtered_files = list_bag_files(dataset_dir, ["20230401_1", "rain_night"])
 # bag_files, filtered_files = list_bag_files(dataset_dir, ["20230401_2", "fog"])
 # bag_files, filtered_files = list_bag_files(dataset_dir, ["20230401_4", "fog_night"])
-# bag_files, filtered_files = list_bag_files(dataset_dir, ["20230908_3", "fog"])
+bag_files, filtered_files = list_bag_files(dataset_dir, ["20230908_3", "fog"])
 # bag_files, filtered_files = list_bag_files(dataset_dir, ["20230908_4", "fog_night_50"])
-bag_files, filtered_files = list_bag_files(dataset_dir, ["20230908_5", "rain&fog_night_50"])
+# bag_files, filtered_files = list_bag_files(dataset_dir, ["20230908_5", "rain&fog_night_50"])
 # bag_files, filtered_files = list_bag_files(dataset_dir, ["20230908_6", "rain&fog_50"])
 
 pathToSaveTestResults_testParameter = create_incremented_folder(test_results_path, folder_name_suffix=test_parameter)

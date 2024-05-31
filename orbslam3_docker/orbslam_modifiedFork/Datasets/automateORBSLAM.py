@@ -36,25 +36,28 @@ def list_bag_files(directory , filter_bag_files_strings = None):
 ## MISSING:
 ## SOLVED!!!
 #  how to save the output of this in a specific output directory
-def Run_ORBSlam_and_Dataset(rosbagName, testResultDirectory=None):
+def Run_ORBSlam_and_Dataset(rosbagName, testResultDirectory=None,customTime=90):
     # Start a command
     # this needs to be run from inside the docker container that has orbslam
+    # print("CUSTOM TIME ", customTime)
     FNULL = open(os.devnull, 'w')
     orbslam_process = subprocess.Popen(["rosrun", "ORB_SLAM3" ,"Stereo", "/ORB_SLAM3/Vocabulary/ORBvoc.txt" ,"/ORB_SLAM3/Examples/Stereo/EuRoC.yaml", "false"],
                                         cwd= testResultDirectory,
-                                        stdout=FNULL, stderr=subprocess.STDOUT)
+                                        stdout=FNULL,
+                                        stderr=subprocess.STDOUT)
                                         # stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
     time.sleep(15)
     # rosbagName = "carlaDatasets/" + rosbagName
-    startDataset_process = subprocess.Popen(["/Datasets/sendDatasetDoneFlag.sh", rosbagName],
+    startDataset_process = subprocess.Popen(["/Datasets/sendDatasetDoneFlag.sh", rosbagName, str(customTime)],
                                         stdout=FNULL,
                                         stderr=subprocess.STDOUT)
                                         # stdout=subprocess.DEVNULL,
                                         # stderr=subprocess.DEVNULL)
 
     # Wait for a certain amount of time
-    time.sleep(90)
+    # time.sleep(90)
+    time.sleep(customTime)
 
     # # If the process is still running after this time, terminate it
     # if process.poll() is None:
