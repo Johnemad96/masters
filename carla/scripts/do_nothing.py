@@ -420,7 +420,7 @@ for p in path:
         #         traffic_light.set_state(carla.TrafficLightState.Green)
         if round(math.sqrt(vehicle.get_velocity().x**2 + vehicle.get_velocity().y**2)) *3.6 < 20 : # resultant speed vector in xy plane in km/h
             Switch_Traffic_Light_ToGreen()
-            print("GREEN LIGHT")
+            # print("GREEN LIGHT")
         # world.tick()
         # stereo_camera_show = np.concatenate((camera_data['image_left'],camera_data['image_right']),axis=1)
         # cv2.imshow('Stereo Camera',stereo_camera_show)
