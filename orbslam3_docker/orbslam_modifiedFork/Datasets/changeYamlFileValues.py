@@ -13,7 +13,8 @@ root_dir_yaml = "/ORB_SLAM3/Examples"
 
 def Change_Yaml_Parameters(new_ThDepth = -1,new_ORBextractor_nFeatures = -1,Sensor_Setup = "Stereo", ORBextractor_iniThFAST = -1, ORBextractor_minThFAST = -1):
     path_to_yaml = os.path.join(root_dir_yaml, "Stereo" if Sensor_Setup == "Stereo" else "Stereo-Interial")
-    with open(os.path.join(path_to_yaml,'EuRoC.yaml'), 'r') as file:
+    # with open(os.path.join(path_to_yaml,'EuRoC.yaml'), 'r') as file:
+    with open(os.path.join(path_to_yaml,'KITTI04-12.yaml'), 'r') as file:
         lines = file.readlines()
 
     # Loop over the lines in the file
@@ -44,7 +45,8 @@ def Change_Yaml_Parameters(new_ThDepth = -1,new_ORBextractor_nFeatures = -1,Sens
             continue
 
     # Write the lines back to the YAML file
-    with open(os.path.join(path_to_yaml,'EuRoC.yaml'), 'w') as file:
+    # with open(os.path.join(path_to_yaml,'EuRoC.yaml'), 'w') as file:
+    with open(os.path.join(path_to_yaml,'KITTI04-12.yaml'), 'w') as file:
         file.writelines(lines)
 
 if __name__ == "__main__":

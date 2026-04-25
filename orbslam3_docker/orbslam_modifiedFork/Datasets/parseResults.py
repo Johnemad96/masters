@@ -12,10 +12,12 @@ from readParams import Read_Required_Params
 ROOT_DIR = None #"/home/john/masters/orbslam3_docker/orbslam_modifiedFork/Datasets/carlaDatasets"
 STEREO_FOLDER_NAME = None #"stereo"
 OUTPUT_FILENAME = "output.csv"
-BASE_TERMINAL_COMMAND = "evo_ape tum " #GroundTruth_Transformed_clean.tum stereo/1/FrameTrajectory_TUM_Format.txt -as --save_plot plot.pgf --save_results stereo/stereo_1_results.zip"
+# BASE_TERMINAL_COMMAND = "evo_ape tum " #GroundTruth_Transformed_clean.tum stereo/1/FrameTrajectory_TUM_Format.txt -as --save_plot plot.pgf --save_results stereo/stereo_1_results.zip"
+BASE_TERMINAL_COMMAND = "evo_ape kitti " #GroundTruth_Transformed_clean.tum stereo/1/FrameTrajectory_TUM_Format.txt -as --save_plot plot.pgf --save_results stereo/stereo_1_results.zip"
 TERMINAL_COMMAND = ""
 GROUND_TRUTH_FILE_NAME =None # "GroundTruth_Transformed_clean.tum "
-TRAJECTORY_FILE_NAME = "FrameTrajectory_TUM_Format.txt "
+# TRAJECTORY_FILE_NAME = "FrameTrajectory_TUM_Format.txt " #EUROC
+TRAJECTORY_FILE_NAME = "CameraTrajectory.txt "
 ALIGN = "--align " #--align --correct_scale
 # SCALE = "--correct_scale "
 SAVE_PLOT_CMD = "--save_plot "
