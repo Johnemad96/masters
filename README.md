@@ -1,4 +1,4 @@
-# Optimizing ORB-SLAM3 for Varied Weather Conditions Using Genetic Algorithms
+# Optimizing ORB-SLAM for Varied Weather Conditions Using Genetic Algorithms
 
 Master's thesis project — Ain Shams University. This repo covers the full pipeline: generating stereo datasets in [CARLA](https://carla.org/) across 8 weather conditions, running [ORB-SLAM2](https://github.com/raulmur/ORB_SLAM2) stereo on those datasets, and using a genetic algorithm to find optimal ORB-SLAM2 parameters per weather condition.
 
