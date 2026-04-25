@@ -19,6 +19,12 @@ pangolin/
 !*/Dockerfile
 !**.csv
 
+# Allow readme_pics folder entirely
+!readme_pics/
+!readme_pics/**
+
+rtk.csv
+gps.csv
 
 # # Don't ignore a specific directory and its contents
 !/orbslam3_docker/orbslam_modifiedFork/Datasets/carlaDatasets/justForPlotingZIPResults/**/*.png
