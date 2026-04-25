@@ -74,7 +74,7 @@ GENE1_LENGTH_BINARY = 7 #(UP TO 128)
 
 #Param2 = n of orb features
 PARAM2_MIN = 600  # minimum value for parameter 2
-PARAM2_MAX = 1500 # maximum value for parameter 2
+PARAM2_MAX = 2047 # maximum value for parameter 2
 GENE2_LENGTH_BINARY = 11 #(UP TO 2048)
 
 #Param3 = iniThFAST
@@ -509,7 +509,8 @@ def f(param1, param2, param3=None, param4=None):
 
     # os.makedirs(pathToSaveTestResults, exist_ok=True)
     print("running orb slam")
-    Run_ORBSlam_and_Dataset(filtered_files[0], pathToSaveTestResults)
+    print(pathToSaveTestResults)
+    Run_ORBSlam_and_Dataset(filtered_files[0], testResultDirectory=pathToSaveTestResults,customTime=45,dataset="kitti")
     # time.sleep(3)
 
     # full_path, relative_path = find_files(parameters['ROOT_DIR'], "FrameTrajectory_TUM_Format.txt", parameters['STEREO_FOLDER_NAME'],parameters['test_parameter'])
@@ -518,7 +519,10 @@ def f(param1, param2, param3=None, param4=None):
     subfolder_path, subfolder = os.path.split(pathToSaveTestResults)
     subfolder_path = (os.path.join(subfolder_path, subfolder))
     print(resultInstance_Index,"\n", subfolder,"\n" ,subfolder_path,"\n", os.getcwd())
-    if "FrameTrajectory_TUM_Format.txt" in sorted(os.listdir(pathToSaveTestResults)):
+    # For Euroc Dataset
+    # if "FrameTrajectory_TUM_Format.txt" in sorted(os.listdir(pathToSaveTestResults)):
+    # For Kitti 
+    if "CameraTrajectory.txt" in sorted(os.listdir(pathToSaveTestResults)):
         eval_command = ParseResults_SubSubfolder(subfolder, sorted(os.listdir(subfolder_path)),
                                 subfolder_path, 
                                 dataset_ground_truth_folder=evaluationParameters['dataset_ground_truth_folder'], 
@@ -656,3 +660,4 @@ if __name__ == "__main__":
     results.to_csv(os.path.join(pathToSaveTestResults_testParameter,'results.csv'), index=False)
     for i in range (len(fitness_list)-1):
         print(generation_list[i], solution_list[i], fitness_list[i], parameters_list[i])
+    print(os.path.join(pathToSaveTestResults_testParameter,'results.csv'))
