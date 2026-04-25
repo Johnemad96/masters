@@ -19,11 +19,11 @@ do_nothing.py ──────────────────────
 ROS Bag Files (rosbag_create.py)                                                 │
     │  Packages stereo + IMU into EuRoC-format bags                             │
     ▼                                                                            │
-ORB-SLAM3 Stereo-Inertial (automateORBSLAM.py)                                  │
+ORB-SLAM2 Stereo (automateORBSLAM.py)                                           │
     │  Runs SLAM, outputs estimated trajectory (TUM format)                     │
     ▼                                                                            │
 Genetic Algorithm (geneticAlgorithm_4params.py)                                 │
-    │  Optimizes 4 ORB-SLAM3 parameters:                                        │
+    │  Optimizes 4 ORB-SLAM2 parameters:                                        │
     │    · ORBextractor.baseline    (range  20 – 120)                           │
     │    · ORBextractor.nFeatures   (range 600 – 2047)                          │
     │    · ORBextractor.iniThFAST   (range  18 – 50)                            │
@@ -88,7 +88,7 @@ masters/
 │   └── orbslam_modifiedFork/
 │       ├── ORB_SLAM3/                     # Modified ORB-SLAM3 C++ source
 │       └── Datasets/
-│           ├── automateORBSLAM.py         # Runs ORB-SLAM3 on bag files
+│           ├── automateORBSLAM.py         # Runs ORB-SLAM2 on bag files
 │           ├── parseResults.py            # Trajectory evaluation (EVO / RMSE)
 │           ├── changeYamlFileValues.py    # Programmatic YAML parameter editing
 │           ├── carlaDatasets/
@@ -123,7 +123,7 @@ cd orbslam3_docker/orbslam_modifiedFork/Datasets/carlaDatasets
 python rosbag_create.py
 ```
 
-### 3. Run ORB-SLAM3
+### 3. Run ORB-SLAM2
 
 ```bash
 cd orbslam3_docker/orbslam_modifiedFork/Datasets
@@ -150,5 +150,5 @@ python parseResults.py
 
 ## Publications
 
-- **John Emad**, *Optimizing ORB-SLAM3 For Varied Weather Conditions Using Genetic Algorithm*, IOP Journal of Physics: Conference Series — [journal link](https://iopscience.iop.org/article/10.1088/1742-6596/2811/1/012029) · [local PDF](orbslam3_docker/orbslam_modifiedFork/docs/conferencePaper/Optimizing_ORBSLAM_For_Varied_Weather_Conditions_Using_Genetic_Algorithm.pdf)
+- **John Emad**, *Optimizing ORB-SLAM3 For Varied Weather Conditions Using Genetic Algorithm*, IOP Journal of Physics: Conference Series — [journal link](https://iopscience.iop.org/article/10.1088/1742-6596/2811/1/012029)
 - Full thesis: [PDF](orbslam3_docker/orbslam_modifiedFork/docs/thesis/Robust_Multi_Weather_Slam.pdf)
